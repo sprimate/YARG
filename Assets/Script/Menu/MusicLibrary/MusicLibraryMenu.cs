@@ -54,18 +54,18 @@ namespace YARG.Menu.MusicLibrary
         public static MusicLibraryMode LibraryMode;
 
         public static SongEntry CurrentlyPlaying;
-        public        MenuState MenuState;
-        public        Playlist  SelectedPlaylist;
+        public MenuState MenuState;
+        public Playlist SelectedPlaylist;
 
 #nullable enable
         private static SongEntry[]? _recommendedSongs;
 #nullable disable
 
-        private static string                  _currentSearch = string.Empty;
-        private static int                     _savedIndex;
-        private static int                     _mainLibraryIndex = -1;
+        private static string _currentSearch = string.Empty;
+        private static int _savedIndex;
+        private static int _mainLibraryIndex = -1;
         private static MusicLibraryReloadState _reloadState = MusicLibraryReloadState.Full;
-        private static Playlist                _savedPlaylist;
+        private static Playlist _savedPlaylist;
 
         public bool PlaylistMode => SelectedPlaylist != null;
 
@@ -182,12 +182,7 @@ namespace YARG.Menu.MusicLibrary
             _reloadState = MusicLibraryReloadState.None;
 
             // Set proper text
-            _subHeader.text = LibraryMode switch
-            {
-                MusicLibraryMode.QuickPlay => Localize.Key("Menu.Main.Options.Quickplay"),
-                MusicLibraryMode.Practice  => Localize.Key("Menu.Main.Options.Practice"),
-                _                          => throw new Exception("Unreachable.")
-            };
+            _subHeader.text = GetSubheaderText();
 
             // Set IsPractice as well
             GlobalVariables.State.IsPractice = LibraryMode == MusicLibraryMode.Practice;
@@ -348,6 +343,16 @@ namespace YARG.Menu.MusicLibrary
             }
         }
 
+        protected virtual string GetSubheaderText()
+        {
+            return LibraryMode switch
+            {
+                MusicLibraryMode.QuickPlay => Localize.Key("Menu.Main.Options.Quickplay"),
+                MusicLibraryMode.Practice => Localize.Key("Menu.Main.Options.Practice"),
+                _ => throw new Exception("Unreachable.")
+            };
+        }
+
         protected override void OnSelectedIndexChanged()
         {
             const double PREVIEW_SCROLL_DELAY = .6f;
@@ -385,11 +390,11 @@ namespace YARG.Menu.MusicLibrary
 
             var viewList = MenuState switch
             {
-                MenuState.Library        => CreateNormalViewList(),
+                MenuState.Library => CreateNormalViewList(),
                 MenuState.PlaylistSelect => CreatePlaylistSelectViewList(),
-                MenuState.Playlist       => CreatePlaylistViewList(),
-                MenuState.Show           => CreateShowViewList(),
-                _                        => throw new Exception("Unreachable.")
+                MenuState.Playlist => CreatePlaylistViewList(),
+                MenuState.Show => CreateShowViewList(),
+                _ => throw new Exception("Unreachable.")
             };
 
             // Disable shortcuts if there are less than 2 sort headers in the viewlist
@@ -718,7 +723,7 @@ namespace YARG.Menu.MusicLibrary
                 return;
             }
 
-            switch(MenuState)
+            switch (MenuState)
             {
                 case MenuState.Playlist:
                     ExitPlaylistView();

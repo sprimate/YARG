@@ -186,7 +186,7 @@ namespace YARG.Menu.ScoreScreen
                     case GameMode.FiveFretGuitar:
                     {
                         card = Instantiate(_guitarCardPrefab, _cardContainer);
-                        ((ScoreCard<GuitarStats>)card).Initialize(score.IsHighScore, score.Player, score.Stats as GuitarStats);
+                        ((ScoreCard<GuitarStats>) card).Initialize(score.IsHighScore, score.Player, score.Stats as GuitarStats);
                         break;
                     }
                     case GameMode.FourLaneDrums:
@@ -194,13 +194,13 @@ namespace YARG.Menu.ScoreScreen
                     case GameMode.EliteDrums:
                     {
                         card = Instantiate(_drumsCardPrefab, _cardContainer);
-                        ((ScoreCard<DrumsStats>)card).Initialize(score.IsHighScore, score.Player, score.Stats as DrumsStats);
+                        ((ScoreCard<DrumsStats>) card).Initialize(score.IsHighScore, score.Player, score.Stats as DrumsStats);
                         break;
                     }
                     case GameMode.Vocals:
                     {
                         card = Instantiate(_vocalsCardPrefab, _cardContainer);
-                        ((ScoreCard<VocalsStats>)card).Initialize(score.IsHighScore, score.Player, score.Stats as VocalsStats);
+                        ((ScoreCard<VocalsStats>) card).Initialize(score.IsHighScore, score.Player, score.Stats as VocalsStats);
                         break;
                     }
                     case GameMode.ProKeys:
@@ -402,7 +402,11 @@ namespace YARG.Menu.ScoreScreen
                     if (!_analyzingReplay)
                     {
                         GlobalVariables.State.ShowIndex++;
-                        if (GlobalVariables.State.PlayingAShow &&
+                        if (GlobalVariables.State.PlayingInTour)
+                        {
+                            Gameplay.GameManager.ForceQuitSong();//Goes back to menu after clearing out whatever it needed to
+                        }
+                        else if (GlobalVariables.State.PlayingAShow &&
                             GlobalVariables.State.ShowIndex < GlobalVariables.State.ShowSongs.Count)
                         {
                             // Reset CurrentSong and launch back into the Gameplay scene

@@ -44,14 +44,15 @@ namespace YARG.Menu.Settings
                         songCount++;
                     }
                 }
+                int tourCount = System.IO.Directory.GetFiles(SongFolders[_index], "*.tour", System.IO.SearchOption.AllDirectories).Length;
 
-                if (songCount == 0)
+                if (songCount == 0 && tourCount == 0)
                 {
                     _songCountText.text = Localize.Key("Menu.Settings.ScanNeeded");
                 }
                 else
                 {
-                    _songCountText.text = Localize.KeyFormat("Menu.Settings.SongCount", songCount);
+                    _songCountText.text = Localize.KeyFormat("Menu.Settings.SongCount", songCount) + " / " + Localize.KeyFormat("Menu.Settings.TourCount", tourCount);
                 }
             }
         }

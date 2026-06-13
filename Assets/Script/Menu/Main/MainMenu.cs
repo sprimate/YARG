@@ -61,6 +61,15 @@ namespace YARG.Menu.Main
             QuickPlay();
         }
 
+        public void Tour()
+        {
+            var menu = MenuManager.Instance.PushMenu(MenuManager.Menu.TourList, false);
+
+            MusicLibraryMenu.LibraryMode = MusicLibraryMode.QuickPlay;
+
+            menu.gameObject.SetActive(true);
+        }
+
         public void QuickPlay()
         {
             var menu = MenuManager.Instance.PushMenu(MenuManager.Menu.MusicLibrary, false);

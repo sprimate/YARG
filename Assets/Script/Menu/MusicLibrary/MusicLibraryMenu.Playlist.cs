@@ -14,7 +14,7 @@ namespace YARG.Menu.MusicLibrary
 {
     public partial class MusicLibraryMenu
     {
-        public Playlist       ShowPlaylist   { get; set; }         = new(true);
+        public Playlist ShowPlaylist { get; set; } = new(true);
 
         private List<ViewType> CreatePlaylistSelectViewList()
         {
@@ -207,7 +207,7 @@ namespace YARG.Menu.MusicLibrary
             SetShowNavigationScheme();
 
             // Display the show screen
-			SelectedPlaylist = ShowPlaylist;
+            SelectedPlaylist = ShowPlaylist;
             MenuState = MenuState.Show;
             Refresh();
 

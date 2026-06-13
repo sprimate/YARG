@@ -140,7 +140,7 @@ namespace YARG.Menu.MusicLibrary
         public override void SecondaryTextClick()
         {
             base.SecondaryTextClick();
-           _musicLibrary.SetSearchInput(SortAttribute.Artist, $"\"{SongEntry.Artist.SearchStr}\"");
+            _musicLibrary.SetSearchInput(SortAttribute.Artist, $"\"{SongEntry.Artist.SearchStr}\"");
         }
 
         public override void PrimaryButtonClick()
@@ -160,13 +160,14 @@ namespace YARG.Menu.MusicLibrary
             GlobalVariables.State.ShowSongs.Clear();
             GlobalVariables.State.ShowSongs.Add(SongEntry);
             GlobalVariables.State.PlayingAShow = false;
+            GlobalVariables.State.PlayingInTour = this is TourSongViewType;
 
             MenuManager.Instance.PushMenu(MenuManager.Menu.DifficultySelect);
         }
 
         public override void IconClick()
         {
-           _musicLibrary.SetSearchInput(SortAttribute.Source, $"\"{SongEntry.Source.SearchStr}\"");
+            _musicLibrary.SetSearchInput(SortAttribute.Source, $"\"{SongEntry.Source.SearchStr}\"");
         }
 
         public override void FavoriteClick()

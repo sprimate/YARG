@@ -29,6 +29,8 @@ namespace YARG.Scores
 
         private static ScoreDatabase _db;
 
+        public static ScoreDatabase Database => _db;
+
         private static readonly Dictionary<HashWrapper, PlayerScoreRecord> PlayerHighScores = new();
         private static readonly Dictionary<HashWrapper, PlayerScoreRecord> PlayerHighPercentages = new();
         private static readonly Dictionary<HashWrapper, GameRecord> BandHighScores = new();
@@ -132,6 +134,19 @@ namespace YARG.Scores
                 }
 
                 _db.InsertSoloRecords(playerEntries);
+
+                // If the song was played as part of a tour, upsert the per-tour best stars/score.
+                if (GlobalVariables.State.PlayingInTour)
+                {
+                    _db.UpsertTourRecord(
+                        TourMenu.SelectedTourData.TourId,
+                        gameRecord.SongName,
+                        gameRecord.SongArtist,
+                        GlobalVariables.State.ShowIndex,
+                        (int) gameRecord.BandStars,
+                        gameRecord.BandScore
+                    );
+                }
 
                 // Update cached high scores
                 var songChecksum = HashWrapper.Create(gameRecord.SongChecksum);

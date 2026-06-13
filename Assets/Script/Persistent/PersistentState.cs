@@ -14,7 +14,7 @@ namespace YARG
             ShowSongs = new List<SongEntry>(),
         };
 
-        public SongEntry   CurrentSong;
+        public SongEntry CurrentSong;
 #nullable enable
         public ReplayInfo? CurrentReplay;
 #nullable disable
@@ -23,13 +23,14 @@ namespace YARG
 
         public float SongSpeed;
 
-        public          bool            PlayingAShow { get; set; }
-        public          List<SongEntry> ShowSongs    { get; set; }
-        public          int             ShowIndex    { get; set; }
+        public bool PlayingAShow { get; set; }
+        public bool PlayingInTour { get; set; }
+        public List<SongEntry> ShowSongs { get; set; }
+        public int ShowIndex { get; set; }
 
-        public          bool IsPractice;
+        public bool IsPractice;
         public readonly bool IsReplay => CurrentReplay is not null;
-        public          bool PlayingWithReplay;
+        public bool PlayingWithReplay;
 
     }
 }

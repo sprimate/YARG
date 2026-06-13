@@ -60,7 +60,7 @@ namespace YARG.Gameplay
         /// <summary>
         /// Equal to either <see cref="PlayerContainer.Players"/> or the players in the replay.
         /// </summary>
-        public IReadOnlyList<YargPlayer> YargPlayers { get; private set;}
+        public IReadOnlyList<YargPlayer> YargPlayers { get; private set; }
 
         private List<BasePlayer> _players;
 
@@ -74,17 +74,17 @@ namespace YARG.Gameplay
         /// This is not initialized on awake, but rather, in
         /// <see cref="GameplayBehaviour.OnChartLoaded"/>.
         /// </remarks>
-        public BeatEventHandler BeatEventHandler { get;    private set; }
-        public CrowdEventHandler CrowdEventHandler  { get; private set; }
-        public CameraManager     VenueCameraManager { get; private set; }
-        public CharacterManager  VenueCharacterManager { get; private set; }
+        public BeatEventHandler BeatEventHandler { get; private set; }
+        public CrowdEventHandler CrowdEventHandler { get; private set; }
+        public CameraManager VenueCameraManager { get; private set; }
+        public CharacterManager VenueCharacterManager { get; private set; }
 
-        public PracticeManager  PracticeManager  { get; private set; }
+        public PracticeManager PracticeManager { get; private set; }
         public BackgroundManager BackgroundManager { get; private set; }
         public EngineManager EngineManager { get; private set; }
 
-        public SongEntry Song  { get; private set; }
-        public SongChart    Chart { get; private set; }
+        public SongEntry Song { get; private set; }
+        public SongChart Chart { get; private set; }
 
         // For clarity, try to avoid using these properties inside GameManager itself
         // These are just to expose properties from the song runner to the outside
@@ -111,7 +111,7 @@ namespace YARG.Gameplay
 
         public double SongLength { get; private set; }
 
-        public bool IsPractice      { get; private set; }
+        public bool IsPractice { get; private set; }
 
         public int BandScore
         {
@@ -131,10 +131,10 @@ namespace YARG.Gameplay
             set => EngineManager.Stars = value;
         }
 
-        public int   BandMultiplier => EngineManager.BandMultiplier;
+        public int BandMultiplier => EngineManager.BandMultiplier;
 
         public double FirstNoteTime { get; private set; }
-        public double LastNoteTime  { get; private set; }
+        public double LastNoteTime { get; private set; }
 
         public ReplayInfo ReplayInfo { get; private set; }
         public ReplayData ReplayData { get; private set; }
@@ -152,7 +152,7 @@ namespace YARG.Gameplay
         private List<double> _frameTimes;
 
         public bool PlayingAShow => GlobalVariables.State.PlayingAShow;
-        public int  ShowIndex = 0;
+        public int ShowIndex = 0;
 
         private BandComboType _bandComboType;
 
@@ -566,7 +566,7 @@ namespace YARG.Gameplay
             }, playerEntries);
         }
 
-        public void ForceQuitSong()
+        public static void ForceQuitSong()
         {
             GlobalVariables.State = PersistentState.Default;
             GlobalVariables.Instance.LoadScene(SceneIndex.Menu);
@@ -684,10 +684,10 @@ namespace YARG.Gameplay
             {
                 case BandComboType.Strict:
                     BandCombo = 0;
-                break;
+                    break;
                 case BandComboType.Lenient:
                     BandCombo = Players.Sum(e => e.Combo * e.BaseStats.BandComboUnits);
-                break;
+                    break;
             }
         }
 

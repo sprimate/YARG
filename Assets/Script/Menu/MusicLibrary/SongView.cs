@@ -153,14 +153,14 @@ namespace YARG.Menu.MusicLibrary
             }
         }
 
-        public void PrimaryTextClick()
+        public virtual void PrimaryTextClick()
         {
             if (!Showing) return;
 
             ViewType.PrimaryButtonClick();
         }
 
-        public void SecondaryTextClick()
+        public virtual void SecondaryTextClick()
         {
             if (!Showing) return;
 
