@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Text;
 using UnityEngine;
 using YARG.Core.Game;
@@ -24,6 +25,7 @@ namespace YARG.Menu.MusicLibrary
         public override BackgroundType Background => BackgroundType.Normal;
 
         public override bool UseAsMadeFamousBy => !SongEntry.IsMaster;
+        protected virtual bool ShowAllInstrumentHighScores => false;
 
         public readonly SongEntry SongEntry;
 
@@ -31,8 +33,11 @@ namespace YARG.Menu.MusicLibrary
 
         private bool _fetchedScores;
         private PlayerScoreRecord _playerScoreRecord;
+        public PlayerScoreRecord _PlayerScoreRecord => _playerScoreRecord;
         private PlayerScoreRecord _playerPercentRecord;
+        public PlayerScoreRecord _PlayerPercentRecord => _playerScoreRecord;
         private GameRecord _bandScoreRecord;
+
 
         public SongViewType(MusicLibraryMenu musicLibrary, SongEntry songEntry)
         {
@@ -208,7 +213,7 @@ namespace YARG.Menu.MusicLibrary
             }
         }
 
-        private void FetchHighScores()
+        protected void FetchHighScores()
         {
             if (_fetchedScores)
             {
@@ -220,10 +225,33 @@ namespace YARG.Menu.MusicLibrary
             if (_musicLibrary.ShouldDisplaySoloHighScores)
             {
                 var player = PlayerContainer.Players.First(e => !e.Profile.IsBot);
-                _playerScoreRecord = ScoreContainer.GetHighScore(
-                    SongEntry.Hash, player.Profile.Id, player.Profile.CurrentInstrument);
-                _playerPercentRecord = ScoreContainer.GetBestPercentageScore(
-                    SongEntry.Hash, player.Profile.Id, player.Profile.CurrentInstrument);
+                IEnumerable<Core.Instrument> instruments;
+                if (ShowAllInstrumentHighScores)
+                {
+                    instruments = System.Enum.GetValues(typeof(Core.Instrument)).Cast<Core.Instrument>();
+                }
+                else
+                {
+                    instruments = new List<Core.Instrument> { player.Profile.CurrentInstrument };
+                }
+
+                foreach (var instrument in instruments)
+                {
+                    var playerScoreRecord = ScoreContainer.GetHighScore(
+                        SongEntry.Hash, player.Profile.Id, instrument);
+                    var playerPercentRecord = ScoreContainer.GetBestPercentageScore(
+                        SongEntry.Hash, player.Profile.Id, instrument);
+
+                    if (playerScoreRecord is not null && (_playerScoreRecord is null || playerScoreRecord.Score > _playerScoreRecord.Score))
+                    {
+                        _playerScoreRecord = playerScoreRecord;
+                    }
+
+                    if (playerPercentRecord is not null && (_playerPercentRecord is null || playerPercentRecord.GetPercent() > _playerPercentRecord.GetPercent()))
+                    {
+                        _playerPercentRecord = playerPercentRecord;
+                    }
+                }
             }
             else
             {

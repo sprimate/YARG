@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using YARG.Core.Game;
 using YARG.Core.Song;
 using YARG.Menu.ListMenu;
 using YARG.Menu.MusicLibrary;
@@ -13,57 +14,53 @@ namespace YARG
 {
     public class TourMenu : MusicLibraryMenu
     {
+        protected override bool ForceSimpleNavigationEntries => true;
         public TextMeshProUGUI totalStarsText;
         public TextMeshProUGUI totalScoreText;
         public TextMeshProUGUI totalSongsText;
         public static TourData SelectedTourData { get; set; }
+        static TourData setupTourData;
+        int totalStars;
+        int totalScore;
+        int totalSongs;
         public static bool IsLocked(ViewType viewType)
         {
             return viewType is TourSongViewType songViewType && songViewType.isLocked;
         }
 
-        public bool IsLocked(TourShowData show)
+        protected override void OnEnable()
         {
-            foreach (var condition in show.UnlockConditions)
+            if (setupTourData == SelectedTourData)
             {
-                if (!IsConditionMet(condition))
-                {
-                    return true;
-                }
+                SetReload(MusicLibraryReloadState.None);
             }
-
-            return false;
+            else
+            {
+                SetReload(MusicLibraryReloadState.Full);
+            }
+            base.OnEnable();
+            UpdateScores();
         }
 
-        bool IsConditionMet(TourUnlockCondition condition)
+        protected override void OnDisable()
         {
-            var db = ScoreContainer.Database;
-            var tourId = SelectedTourData.TourId;
-
-            int actual = condition.TypeOfCondition switch
-            {
-                TourUnlockCondition.ConditionType.SongsCompleted =>
-                    db.QueryTourCompletedSongCount(tourId),
-                TourUnlockCondition.ConditionType.StarsEarned =>
-                    db.QueryTourTotalStars(tourId),
-                TourUnlockCondition.ConditionType.Score =>
-                    db.QueryTourTotalScore(tourId),
-                _ => throw new InvalidOperationException(
-                    $"Unknown TourUnlockCondition type: {condition.TypeOfCondition}"),
-            };
-
-            return actual >= condition.RequiredAmount;
+            base.OnDisable();
+            SelectedTourData = null;
+            SetReload(MusicLibraryReloadState.Full);
         }
 
         protected override void Refresh()
         {
             base.Refresh();
-            var db = ScoreContainer.Database;
-            var tourId = SelectedTourData.TourId;
+            UpdateScores();
+        }
 
-            totalSongsText.text = $"Songs: {db.QueryTourCompletedSongCount(tourId)}";
-            totalStarsText.text = $"Stars: {db.QueryTourTotalStars(tourId)}";
-            totalScoreText.text = $"Score: {db.QueryTourTotalScore(tourId)}";
+        void UpdateScores()
+        {
+            Debug.Log("Updating Scores!");
+            totalSongsText.text = $"Songs: {totalSongs}";
+            totalStarsText.text = $"Stars: {totalStars}";
+            totalScoreText.text = $"Score: {totalScore}";
         }
 
         private static string BuildUnlockText(TourShowData show)
@@ -79,11 +76,11 @@ namespace YARG
                 string conditionText = condition.TypeOfCondition switch
                 {
                     TourUnlockCondition.ConditionType.SongsCompleted =>
-                        $"Songs Completed: {condition.RequiredAmount}",
+                        $"Songs Completed: {condition.RequiredAmount:N0}",
                     TourUnlockCondition.ConditionType.StarsEarned =>
-                        $"Stars: {condition.RequiredAmount}",
+                        $"Stars: {condition.RequiredAmount:N0}",
                     TourUnlockCondition.ConditionType.Score =>
-                        $"Score: {condition.RequiredAmount}",
+                        $"Score: {condition.RequiredAmount:N0}",
                     _ => string.Empty,
                 };
 
@@ -104,10 +101,17 @@ namespace YARG
         protected override List<ViewType> CreateViewList()
         {
             List<ViewType> list = new List<ViewType>();
+            if (SelectedTourData == null && setupTourData != null)
+            {
+                SelectedTourData = setupTourData;
+                setupTourData = null;
+            }
+
             bool showedFirstLocked = false;
+            totalStars = totalScore = totalSongs = 0;
+
             foreach (var show in SelectedTourData.Shows)
             {
-
                 List<SongEntry> showSongs = new();
                 foreach (var incomingEntry in show.Songs)
                 {
@@ -127,7 +131,7 @@ namespace YARG
                     }
                 }
 
-                bool isLocked = IsLocked(show);
+                bool isLocked = show.UnlockConditions != null && show.UnlockConditions.Length > 0 && show.UnlockConditions.Any(condition => !IsConditionMet(condition));
 
                 var showName = show.ShowName;
                 if (isLocked)
@@ -151,16 +155,43 @@ namespace YARG
                     showedFirstLocked = true;
                 }
 
-
                 list.Add(new CategoryViewType(showName, showSongs.Count, showSongs.ToArray()));
 
                 foreach (var song in showSongs)
                 {
-                    list.Add(new TourSongViewType(this, song, isLocked));
+                    var songType = new TourSongViewType(this, song, isLocked);
+                    var record = songType._PlayerScoreRecord;
+                    if (record != null && !isLocked)
+                    {
+                        totalStars += record.Stars.GetStarCount();
+                        totalScore += record.Score;
+                        totalSongs++;
+                    }
+
+                    list.Add(songType);
                 }
             }
 
+            UpdateScores();
+            setupTourData = SelectedTourData;
             return list;
+        }
+
+        bool IsConditionMet(TourUnlockCondition condition)
+        {
+            // var db = ScoreContainer.Database;
+            // var tourId = SelectedTourData.TourId;
+
+            int actual = condition.TypeOfCondition switch
+            {
+                TourUnlockCondition.ConditionType.SongsCompleted => totalSongs,
+                TourUnlockCondition.ConditionType.StarsEarned => totalStars,
+                TourUnlockCondition.ConditionType.Score => totalScore,
+                _ => throw new InvalidOperationException(
+                    $"Unknown TourUnlockCondition type: {condition.TypeOfCondition}"),
+            };
+
+            return actual >= condition.RequiredAmount;
         }
     }
 }

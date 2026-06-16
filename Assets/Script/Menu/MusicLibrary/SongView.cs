@@ -15,6 +15,7 @@ namespace YARG.Menu.MusicLibrary
         private GameObject _songNameContainer;
         [SerializeField]
         private TextMeshProUGUI _sideText;
+
         [SerializeField]
         private StarView _starView;
 

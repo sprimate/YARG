@@ -50,6 +50,7 @@ namespace YARG.Menu.MusicLibrary
         private const int RANDOM_SONG_ID = 0;
         private const int PLAYLIST_ID = 1;
         private const int BACK_ID = 2;
+        protected virtual bool ForceSimpleNavigationEntries => false;
 
         public static MusicLibraryMode LibraryMode;
 
@@ -128,7 +129,7 @@ namespace YARG.Menu.MusicLibrary
             _sidebar.Initialize(this, _searchField);
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             // Set navigation scheme
             SetNavigationScheme();
@@ -257,7 +258,7 @@ namespace YARG.Menu.MusicLibrary
 
             if (ShowPlaylist.Count == 0)
             {
-                Navigator.Instance.PushScheme(new NavigationScheme(new()
+                var navSchemeList = new List<NavigationScheme.Entry>()
                 {
                     new NavigationScheme.Entry(MenuAction.Up, "Menu.Common.Up",
                         ctx =>
@@ -285,61 +286,19 @@ namespace YARG.Menu.MusicLibrary
                                 SelectedIndex++;
                             }
                         }),
-                    leftEntry,
-                    rightEntry,
                     new NavigationScheme.Entry(MenuAction.Green, "Menu.Common.Confirm",
                         () => CurrentSelection?.PrimaryButtonClick()),
-                    new NavigationScheme.Entry(MenuAction.Red, "Menu.Common.Back", Back),
-                    new NavigationScheme.Entry(MenuAction.Yellow, "Menu.MusicLibrary.AddToSet",
-                        AddToPlaylist),
-                    new NavigationScheme.Entry(MenuAction.Blue, "Menu.MusicLibrary.PlayShow",
-                        EnterShowMode),
-                    new NavigationScheme.Entry(MenuAction.Orange, "Menu.MusicLibrary.MoreOptions",
-                        OnButtonHit, OnButtonRelease),
-                }, false));
-            }
-            else
-            {
-                Navigator.Instance.PushScheme(new NavigationScheme(new()
+                    new NavigationScheme.Entry(MenuAction.Red, "Menu.Common.Back", Back)
+                };
+
+                if (!ForceSimpleNavigationEntries)
                 {
-                    new NavigationScheme.Entry(MenuAction.Up, "Menu.Common.Up",
-                        ctx =>
-                        {
-                            if (IsButtonHeldByPlayer(ctx.Player, MenuAction.Orange))
-                            {
-                                GoToPreviousSection();
-                            }
-                            else
-                            {
-                                SetWrapAroundState(!ctx.IsRepeat);
-                                SelectedIndex--;
-                            }
-                        }),
-                    new NavigationScheme.Entry(MenuAction.Down, "Menu.Common.Down",
-                        ctx =>
-                        {
-                            if (IsButtonHeldByPlayer(ctx.Player, MenuAction.Orange))
-                            {
-                                GoToNextSection();
-                            }
-                            else
-                            {
-                                SetWrapAroundState(!ctx.IsRepeat);
-                                SelectedIndex++;
-                            }
-                        }),
-                    leftEntry,
-                    rightEntry,
-                    new NavigationScheme.Entry(MenuAction.Green, "Menu.Common.Confirm",
-                        () => CurrentSelection?.PrimaryButtonClick()),
-                    new NavigationScheme.Entry(MenuAction.Red, "Menu.Common.Back", Back),
-                    new NavigationScheme.Entry(MenuAction.Yellow, "Menu.MusicLibrary.AddToSet",
-                        AddToPlaylist),
-                    new NavigationScheme.Entry(MenuAction.Blue, "Menu.MusicLibrary.StartSet",
-                        StartSetlist),
-                    new NavigationScheme.Entry(MenuAction.Orange, "Menu.MusicLibrary.MoreOptions",
-                        OnButtonHit, OnButtonRelease),
-                }, false));
+                    navSchemeList.Add(new NavigationScheme.Entry(MenuAction.Yellow, "Menu.MusicLibrary.AddToSet", AddToPlaylist));
+                    navSchemeList.Add(new NavigationScheme.Entry(MenuAction.Blue, "Menu.MusicLibrary.PlayShow", EnterShowMode));
+                    navSchemeList.Add(new NavigationScheme.Entry(MenuAction.Orange, "Menu.MusicLibrary.MoreOptions", OnButtonHit, OnButtonRelease));
+                }
+
+                Navigator.Instance.PushScheme(new NavigationScheme(navSchemeList, false));
             }
         }
 
@@ -689,7 +648,7 @@ namespace YARG.Menu.MusicLibrary
             }
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             if (Navigator.Instance == null) return;
 

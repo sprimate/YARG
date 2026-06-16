@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using YARG.Helpers.Extensions;
 using YARG.Menu.MusicLibrary;
 
 namespace YARG
@@ -10,6 +11,7 @@ namespace YARG
         public Image lockedIcon;
         public Button favoriteButton;
         public TextMeshProUGUI songOrCategoryName;
+        public TextMeshProUGUI _instrumentsText;
         public override void Show(bool selected, ViewType viewType)
         {
             base.Show(selected, viewType);
@@ -27,6 +29,18 @@ namespace YARG
 
             Debug.Log("View Type for {vieweType.Name}: " + viewType.GetType().Name + " setting " + songOrCategoryName + " to " + songOrCategoryName.overflowMode, songOrCategoryName);
 
+            if (viewType is TourSongViewType tourSongViewType)
+            {
+                var instrument = tourSongViewType._PlayerPercentRecord?.Instrument;
+                var resourceName = instrument.HasValue ? instrument.Value.ToResourceName() : null;
+                _instrumentsText.text = resourceName != null
+                    ? $"<sprite name=\"{resourceName}\">"
+                    : string.Empty;
+            }
+            else
+            {
+                _instrumentsText.text = string.Empty;
+            }
         }
 
         override public void PrimaryTextClick()

@@ -75,7 +75,6 @@ namespace YARG.Scores
             _db.CreateTable<GameRecord>();
             _db.CreateTable<PlayerScoreRecord>();
             _db.CreateTable<PlayerInfoRecord>();
-            _db.CreateTable<TourRecord>();
 
             // Fill in missing percentage values
             int amountFilled = _db.Execute(
@@ -466,78 +465,6 @@ namespace YARG.Scores
                     profile.Id,
                     (int) profile.CurrentInstrument,
                     (int) profile.CurrentDifficulty);
-        }
-
-        #endregion
-
-        #region Tour record queries
-
-        /// <summary>
-        /// Inserts a new <see cref="TourRecord"/> for the song, or updates the existing one so that
-        /// <see cref="TourRecord.MaxStars"/> and <see cref="TourRecord.MaxScore"/> each hold
-        /// the all-time best value for that song in the given tour/show.
-        /// </summary>
-        public void UpsertTourRecord(Guid tourId, string songName, string artist, int showIndex, int stars, int score)
-        {
-            var existing = FindWithQuery<TourRecord>(
-                @"SELECT * FROM TourRecords
-                WHERE TourId = ? AND SongName = ? AND Artist = ? AND ShowIndex = ?",
-                tourId, songName, artist, showIndex
-            );
-
-            if (existing is null)
-            {
-                Insert(new TourRecord
-                {
-                    TourId    = tourId,
-                    SongName  = songName,
-                    Artist    = artist,
-                    ShowIndex = showIndex,
-                    MaxStars  = stars,
-                    MaxScore  = score,
-                    Completed = true,
-                });
-            }
-            else
-            {
-                existing.MaxStars  = Math.Max(existing.MaxStars, stars);
-                existing.MaxScore  = Math.Max(existing.MaxScore, score);
-                existing.Completed = true;
-                Update(existing);
-            }
-        }
-
-        /// <summary>
-        /// Returns the number of distinct songs the player has completed for the given tour.
-        /// </summary>
-        public int QueryTourCompletedSongCount(Guid tourId)
-        {
-            return _db.ExecuteScalar<int>(
-                "SELECT COUNT(*) FROM TourRecords WHERE TourId = ? AND Completed = 1",
-                tourId
-            );
-        }
-
-        /// <summary>
-        /// Returns the sum of <see cref="TourRecord.MaxStars"/> for completed songs in the given tour.
-        /// </summary>
-        public int QueryTourTotalStars(Guid tourId)
-        {
-            return _db.ExecuteScalar<int>(
-                "SELECT COALESCE(SUM(MaxStars), 0) FROM TourRecords WHERE TourId = ? AND Completed = 1",
-                tourId
-            );
-        }
-
-        /// <summary>
-        /// Returns the sum of <see cref="TourRecord.MaxScore"/> for completed songs in the given tour.
-        /// </summary>
-        public int QueryTourTotalScore(Guid tourId)
-        {
-            return _db.ExecuteScalar<int>(
-                "SELECT COALESCE(SUM(MaxScore), 0) FROM TourRecords WHERE TourId = ? AND Completed = 1",
-                tourId
-            );
         }
 
         #endregion
