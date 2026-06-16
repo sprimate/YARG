@@ -2,6 +2,12 @@ using System;
 
 namespace YARG
 {
+    public enum ELockedSongVisibility
+    {
+        Visible,
+        HideNames,
+        Hidden
+    }
     /// <summary>
     /// Defines one show within a <see cref="TourData"/>.
     /// A show is an ordered setlist of songs that becomes accessible once its
@@ -14,6 +20,8 @@ namespace YARG
         /// Display name of the show.
         /// </summary>
         public string ShowName;
+
+        public bool ShowLockedSongs = false;
 
         /// <summary>
         /// The ordered list of songs in this show, identified by name and artist.

@@ -20,6 +20,8 @@ namespace YARG
         /// </summary>
         public string Author = "Unknown";
 
+        public bool ShowAllLockedShows = false;
+
         /// <summary>
         /// The ordered list of shows in this tour.
         /// Shows are referenced by their 0-based index within this array.

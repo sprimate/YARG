@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using YARG.Core.Song;
 using YARG.Menu.ListMenu;
@@ -12,6 +13,9 @@ namespace YARG
 {
     public class TourMenu : MusicLibraryMenu
     {
+        public TextMeshProUGUI totalStarsText;
+        public TextMeshProUGUI totalScoreText;
+        public TextMeshProUGUI totalSongsText;
         public static TourData SelectedTourData { get; set; }
         public static bool IsLocked(ViewType viewType)
         {
@@ -39,16 +43,27 @@ namespace YARG
             int actual = condition.TypeOfCondition switch
             {
                 TourUnlockCondition.ConditionType.SongsCompleted =>
-                    db.QueryTourCompletedSongCount(tourId, condition.ShowIndex),
+                    db.QueryTourCompletedSongCount(tourId),
                 TourUnlockCondition.ConditionType.StarsEarned =>
-                    db.QueryTourTotalStars(tourId, condition.ShowIndex),
+                    db.QueryTourTotalStars(tourId),
                 TourUnlockCondition.ConditionType.Score =>
-                    db.QueryTourTotalScore(tourId, condition.ShowIndex),
+                    db.QueryTourTotalScore(tourId),
                 _ => throw new InvalidOperationException(
                     $"Unknown TourUnlockCondition type: {condition.TypeOfCondition}"),
             };
 
             return actual >= condition.RequiredAmount;
+        }
+
+        protected override void Refresh()
+        {
+            base.Refresh();
+            var db = ScoreContainer.Database;
+            var tourId = SelectedTourData.TourId;
+
+            totalSongsText.text = $"Songs: {db.QueryTourCompletedSongCount(tourId)}";
+            totalStarsText.text = $"Stars: {db.QueryTourTotalStars(tourId)}";
+            totalScoreText.text = $"Score: {db.QueryTourTotalScore(tourId)}";
         }
 
         private static string BuildUnlockText(TourShowData show)
@@ -61,18 +76,14 @@ namespace YARG
             var parts = new List<string>();
             foreach (var condition in show.UnlockConditions)
             {
-                string scope = condition.ShowIndex == -1
-                    ? "Total "
-                    : " ";//$"\"Show {SelectedTourData.Shows[condition.ShowIndex].ShowName}\" ";
-
                 string conditionText = condition.TypeOfCondition switch
                 {
                     TourUnlockCondition.ConditionType.SongsCompleted =>
-                        $"{scope}Songs Completed: {condition.RequiredAmount}",
+                        $"Songs Completed: {condition.RequiredAmount}",
                     TourUnlockCondition.ConditionType.StarsEarned =>
-                        $"{scope}Stars: {condition.RequiredAmount}",
+                        $"Stars: {condition.RequiredAmount}",
                     TourUnlockCondition.ConditionType.Score =>
-                        $"{scope}Score: {condition.RequiredAmount}",
+                        $"Score: {condition.RequiredAmount}",
                     _ => string.Empty,
                 };
 
@@ -93,7 +104,7 @@ namespace YARG
         protected override List<ViewType> CreateViewList()
         {
             List<ViewType> list = new List<ViewType>();
-
+            bool showedFirstLocked = false;
             foreach (var show in SelectedTourData.Shows)
             {
 
@@ -121,13 +132,28 @@ namespace YARG
                 var showName = show.ShowName;
                 if (isLocked)
                 {
+                    if (showedFirstLocked && !SelectedTourData.ShowAllLockedShows)
+                    {
+                        continue;
+                    }
+
+                    if (!show.ShowLockedSongs)
+                    {
+                        showSongs.Clear();
+                    }
+
                     var unlockText = BuildUnlockText(show);
                     if (!string.IsNullOrEmpty(unlockText))
                     {
                         showName += $" {unlockText}";
                     }
+
+                    showedFirstLocked = true;
                 }
+
+
                 list.Add(new CategoryViewType(showName, showSongs.Count, showSongs.ToArray()));
+
                 foreach (var song in showSongs)
                 {
                     list.Add(new TourSongViewType(this, song, isLocked));

@@ -509,61 +509,34 @@ namespace YARG.Scores
 
         /// <summary>
         /// Returns the number of distinct songs the player has completed for the given tour.
-        /// Pass <c>showIndex = -1</c> to count across all shows.
         /// </summary>
-        public int QueryTourCompletedSongCount(Guid tourId, int showIndex)
+        public int QueryTourCompletedSongCount(Guid tourId)
         {
-            if (showIndex == -1)
-            {
-                return _db.ExecuteScalar<int>(
-                    "SELECT COUNT(*) FROM TourRecords WHERE TourId = ? AND Completed = 1",
-                    tourId
-                );
-            }
-
             return _db.ExecuteScalar<int>(
-                "SELECT COUNT(*) FROM TourRecords WHERE TourId = ? AND ShowIndex = ? AND Completed = 1",
-                tourId, showIndex
+                "SELECT COUNT(*) FROM TourRecords WHERE TourId = ? AND Completed = 1",
+                tourId
             );
         }
 
         /// <summary>
         /// Returns the sum of <see cref="TourRecord.MaxStars"/> for completed songs in the given tour.
-        /// Pass <c>showIndex = -1</c> to sum across all shows.
         /// </summary>
-        public int QueryTourTotalStars(Guid tourId, int showIndex)
+        public int QueryTourTotalStars(Guid tourId)
         {
-            if (showIndex == -1)
-            {
-                return _db.ExecuteScalar<int>(
-                    "SELECT COALESCE(SUM(MaxStars), 0) FROM TourRecords WHERE TourId = ? AND Completed = 1",
-                    tourId
-                );
-            }
-
             return _db.ExecuteScalar<int>(
-                "SELECT COALESCE(SUM(MaxStars), 0) FROM TourRecords WHERE TourId = ? AND ShowIndex = ? AND Completed = 1",
-                tourId, showIndex
+                "SELECT COALESCE(SUM(MaxStars), 0) FROM TourRecords WHERE TourId = ? AND Completed = 1",
+                tourId
             );
         }
 
         /// <summary>
         /// Returns the sum of <see cref="TourRecord.MaxScore"/> for completed songs in the given tour.
-        /// Pass <c>showIndex = -1</c> to sum across all shows.
         /// </summary>
-        public int QueryTourTotalScore(Guid tourId, int showIndex)
+        public int QueryTourTotalScore(Guid tourId)
         {
-            if (showIndex == -1)
-            {
-                return _db.ExecuteScalar<int>(
-                    "SELECT COALESCE(SUM(MaxScore), 0) FROM TourRecords WHERE TourId = ? AND Completed = 1",
-                    tourId
-                );
-            }
-
             return _db.ExecuteScalar<int>(
-                "SELECT COALESCE(SUM(MaxScore), 0) FROM TourRecords WHERE TourId = ? AND ShowIndex = ? AND Completed = 1",
-                tourId, showIndex
+                "SELECT COALESCE(SUM(MaxScore), 0) FROM TourRecords WHERE TourId = ? AND Completed = 1",
+                tourId
             );
         }
 

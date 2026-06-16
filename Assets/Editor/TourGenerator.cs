@@ -71,8 +71,8 @@ namespace Editor
         /// <summary>
         /// Builds example unlock conditions for each show index.
         /// Show 0 is always unlocked (empty conditions).
-        /// Show 1 requires 3 songs completed in Show 0.
-        /// Show 2 requires 3 songs completed in Show 1, plus 5 total stars from any show.
+        /// Show 1 requires 3 total songs completed.
+        /// Show N (N>=2) requires 3*N total songs completed, plus 5 total stars.
         /// </summary>
         private static TourUnlockCondition[] BuildUnlockConditions(int showIndex)
         {
@@ -84,7 +84,6 @@ namespace Editor
                     new TourUnlockCondition
                     {
                         TypeOfCondition = TourUnlockCondition.ConditionType.SongsCompleted,
-                        ShowIndex       = 0,
                         RequiredAmount  = 3,
                     },
                 },
@@ -93,13 +92,11 @@ namespace Editor
                     new TourUnlockCondition
                     {
                         TypeOfCondition = TourUnlockCondition.ConditionType.SongsCompleted,
-                        ShowIndex       = showIndex - 1,
-                        RequiredAmount  = 3,
+                        RequiredAmount  = 3 * showIndex,
                     },
                     new TourUnlockCondition
                     {
                         TypeOfCondition = TourUnlockCondition.ConditionType.StarsEarned,
-                        ShowIndex       = -1, // all shows
                         RequiredAmount  = 5,
                     },
                 },
@@ -237,10 +234,13 @@ namespace Editor
             // 0:M1  1:E1  2:M2  3:E2  4:M3  5:E3  6:M4  7:E4
             // 8:M5  9:E5  10:M6 11:E6 12:M7 13:E7 14:M8 15:E8
             TourUnlockCondition[] Always() => Array.Empty<TourUnlockCondition>();
+            // Cumulative: each tier = 5 main + 1 encore = 6 songs.
+            // Main of tier k unlocks after encore of tier k-1: needs 6*k total songs.
+            // Encore of tier k unlocks after main of tier k: needs 6*k+5 total songs.
             TourUnlockCondition[] AfterEncore(int encoreShowIdx) =>
-                new[] { Completed(encoreShowIdx, 1) };
+                new[] { Completed(6 * ((encoreShowIdx + 1) / 2)) };
             TourUnlockCondition[] AfterMain(int mainShowIdx, int songCount) =>
-                new[] { Completed(mainShowIdx, songCount) };
+                new[] { Completed(6 * (mainShowIdx / 2) + songCount) };
 
             var shows = new[]
             {
@@ -350,7 +350,8 @@ namespace Editor
         private static TourData BuildRockBand1Tour(SongEntry[] allSongs, List<string> warnings)
         {
             TourUnlockCondition[] Always() => Array.Empty<TourUnlockCondition>();
-            TourUnlockCondition[] After(int showIdx) => new[] { Completed(showIdx, 5) };
+            // Cumulative: each tier has 5 songs, so tier N requires 5*N total songs.
+            TourUnlockCondition[] After(int showIdx) => new[] { Completed(5 * (showIdx + 1)) };
 
             var shows = new[]
             {
@@ -436,7 +437,7 @@ namespace Editor
         private static TourData BuildRockBand2Tour(SongEntry[] allSongs, List<string> warnings)
         {
             TourUnlockCondition[] Always() => Array.Empty<TourUnlockCondition>();
-            TourUnlockCondition[] After(int showIdx, int count) => new[] { Completed(showIdx, count) };
+            TourUnlockCondition[] After(int totalCount) => new[] { Completed(totalCount) };
 
             var shows = new[]
             {
@@ -458,7 +459,7 @@ namespace Editor
                     Song("Nine in the Afternoon",     "Panic! at the Disco")),
 
                 // ── Show 1: Classic Rock (60s–70s) ─────────────────────────────
-                Show("Classic Rock", After(0, 8), allSongs, warnings,
+                Show("Classic Rock", After(8), allSongs, warnings,
                     Song("A Jagged Gorgeous Winter",  "The Main Drag"),
                     Song("Alabama Getaway",           "Grateful Dead"),
                     Song("American Woman",            "The Guess Who"),
@@ -477,7 +478,7 @@ namespace Editor
                     Song("Tangled Up in Blue",        "Bob Dylan")),
 
                 // ── Show 2: Alternative Nation (90s alt / grunge) ──────────────
-                Show("Alternative Nation", After(1, 8), allSongs, warnings,
+                Show("Alternative Nation", After(16), allSongs, warnings,
                     Song("Alive",                          "Pearl Jam"),
                     Song("Come Out and Play (Keep 'Em Separated)", "The Offspring"),
                     Song("De-Luxe",                        "Lush"),
@@ -497,7 +498,7 @@ namespace Editor
                     Song("Where'd You Go?",                "The Mighty Mighty Bosstones")),
 
                 // ── Show 3: Hard Hitters (hard rock / punk / nu-metal) ─────────
-                Show("Hard Hitters", After(2, 10), allSongs, warnings,
+                Show("Hard Hitters", After(26), allSongs, warnings,
                     Song("Almost Easy",               "Avenged Sevenfold"),
                     Song("Chop Suey",                "System of a Down"),
                     Song("Down with the Sickness",    "Disturbed"),
@@ -517,7 +518,7 @@ namespace Editor
                     Song("You Oughta Know",           "Alanis Morissette")),
 
                 // ── Show 4: Metal Assault ──────────────────────────────────────
-                Show("Metal Assault", After(3, 10), allSongs, warnings,
+                Show("Metal Assault", After(36), allSongs, warnings,
                     Song("Ace of Spades '08",         "Motörhead"),
                     Song("Battery",                   "Metallica"),
                     Song("Colony of Birchmen",        "Mastodon"),
@@ -533,7 +534,7 @@ namespace Editor
                     Song("White Wedding (Part 1)",    "Billy Idol")),
 
                 // ── Show 5: Face-Melters (prog / bonus / harder cuts) ──────────
-                Show("Face-Melters", After(4, 10), allSongs, warnings,
+                Show("Face-Melters", After(46), allSongs, warnings,
                     Song("Panic Attack",              "Dream Theater"),
                     Song("Rob the Prez-O-Dent",       "That Handsome Devil"),
                     Song("Supreme Girl",              "The Sterns"),
@@ -561,7 +562,7 @@ namespace Editor
         private static TourData BuildRockBand3Tour(SongEntry[] allSongs, List<string> warnings)
         {
             TourUnlockCondition[] Always() => Array.Empty<TourUnlockCondition>();
-            TourUnlockCondition[] AfterStars(int showIdx, int count) => new[] { Stars(showIdx, count) };
+            TourUnlockCondition[] AfterStars(int totalStars) => new[] { Stars(totalStars) };
 
             var shows = new[]
             {
@@ -584,7 +585,7 @@ namespace Editor
                     Song("Whip It",                            "Devo")),
 
                 // ── Show 1: Classic Legends (60s–70s rock) ─────────────────────
-                Show("Classic Legends", AfterStars(0, 25), allSongs, warnings,
+                Show("Classic Legends", AfterStars(25), allSongs, warnings,
                     Song("20th Century Boy",                    "T. Rex"),
                     Song("25 or 6 to 4",                       "Chicago"),
                     Song("Bohemian Rhapsody",                  "Queen"),
@@ -603,7 +604,7 @@ namespace Editor
                     Song("Werewolves of London",               "Warren Zevon")),
 
                 // ── Show 2: New Wave & Indie (80s–00s) ────────────────────────
-                Show("New Wave & Indie", AfterStars(1, 35), allSongs, warnings,
+                Show("New Wave & Indie", AfterStars(60), allSongs, warnings,
                     Song("Antibodies",                         "Poni Hoax"),
                     Song("Cold as Ice",                        "Foreigner"),
                     Song("Combat Baby",                        "Metric"),
@@ -621,7 +622,7 @@ namespace Editor
                     Song("Yoshimi Battles the Pink Robots Pt. 1", "The Flaming Lips")),
 
                 // ── Show 3: Alternative Rock ──────────────────────────────────
-                Show("Alternative Rock", AfterStars(2, 30), allSongs, warnings,
+                Show("Alternative Rock", AfterStars(90), allSongs, warnings,
                     Song("The Beautiful People",               "Marilyn Manson"),
                     Song("Been Caught Stealing",               "Jane's Addiction"),
                     Song("Dead End Friends",                   "Them Crooked Vultures"),
@@ -639,7 +640,7 @@ namespace Editor
                     Song("Get Up, Stand Up",                   "Bob Marley and the Wailers")),
 
                 // ── Show 4: Metal & Punk ───────────────────────────────────────
-                Show("Metal & Punk", AfterStars(3, 30), allSongs, warnings,
+                Show("Metal & Punk", AfterStars(120), allSongs, warnings,
                     Song("Before I Forget",                    "Slipknot"),
                     Song("Beast and the Harlot",               "Avenged Sevenfold"),
                     Song("Caught in a Mosh",                   "Anthrax"),
@@ -656,7 +657,7 @@ namespace Editor
                     Song("This Bastard's Life",                "Swingin' Utters")),
 
                 // ── Show 5: Road Challenge Finals ─────────────────────────────
-                Show("Road Challenge Finals", AfterStars(4, 30), allSongs, warnings,
+                Show("Road Challenge Finals", AfterStars(150), allSongs, warnings,
                     Song("Humanoid",                           "Tokio Hotel"),
                     Song("Killing Loneliness",                 "HIM"),
                     Song("Me Enamora",                         "Juanes"),
@@ -684,7 +685,7 @@ namespace Editor
         private static TourData BuildGreenDayTour(SongEntry[] allSongs, List<string> warnings)
         {
             TourUnlockCondition[] Always() => Array.Empty<TourUnlockCondition>();
-            TourUnlockCondition[] After(int showIdx, int count) => new[] { Completed(showIdx, count) };
+            TourUnlockCondition[] After(int totalCount) => new[] { Completed(totalCount) };
 
             var shows = new[]
             {
@@ -696,67 +697,67 @@ namespace Editor
                     Song("She",                   "Green Day"),
                     Song("When I Come Around",    "Green Day")),
 
-                Show("The Warehouse: Set 2 (Dookie)", After(0, 5), allSongs, warnings,
+                Show("The Warehouse: Set 2 (Dookie)", After(5), allSongs, warnings,
                     Song("Basket Case",           "Green Day"),
                     Song("Coming Clean",          "Green Day"),
                     Song("Emenius Sleepus",       "Green Day"),
                     Song("Sassafrass Roots",       "Green Day"),
                     Song("Welcome to Paradise",   "Green Day")),
 
-                Show("The Warehouse: Set 3 (Dookie)", After(1, 5), allSongs, warnings,
+                Show("The Warehouse: Set 3 (Dookie)", After(10), allSongs, warnings,
                     Song("Burnout",               "Green Day"),
                     Song("Chump",                 "Green Day"),
                     Song("In the End",            "Green Day"),
                     Song("Longview",              "Green Day")),
 
                 // ── Venue 2: Milton Keynes National Bowl — 2005 ───────────────
-                Show("Milton Keynes: Set 1", After(2, 4), allSongs, warnings,
+                Show("Milton Keynes: Set 1", After(14), allSongs, warnings,
                     Song("Boulevard of Broken Dreams",      "Green Day"),
                     Song("Extraordinary Girl",              "Green Day"),
                     Song("Geek Stink Breath",               "Green Day"),
                     Song("Wake Me Up When September Ends",  "Green Day"),
                     Song("Warning",                         "Green Day")),
 
-                Show("Milton Keynes: Set 2 (American Idiot)", After(3, 5), allSongs, warnings,
+                Show("Milton Keynes: Set 2 (American Idiot)", After(19), allSongs, warnings,
                     Song("American Idiot",        "Green Day"),
                     Song("Minority",              "Green Day"),
                     Song("Nice Guys Finish Last", "Green Day"),
                     Song("Whatsername",           "Green Day")),
 
-                Show("Milton Keynes: Set 3 (American Idiot)", After(4, 4), allSongs, warnings,
+                Show("Milton Keynes: Set 3 (American Idiot)", After(23), allSongs, warnings,
                     Song("Give Me Novacaine/She's a Rebel", "Green Day"),
                     Song("Hitchin' a Ride",                 "Green Day"),
                     Song("Holiday",                         "Green Day"),
                     Song("Jesus of Suburbia",               "Green Day"),
                     Song("Letterbomb",                      "Green Day")),
 
-                Show("Milton Keynes: Set 4 (American Idiot)", After(5, 5), allSongs, warnings,
+                Show("Milton Keynes: Set 4 (American Idiot)", After(28), allSongs, warnings,
                     Song("Are We the Waiting/St. Jimmy",    "Green Day"),
                     Song("Brain Stew/Jaded",                "Green Day"),
                     Song("Good Riddance (Time of Your Life)", "Green Day"),
                     Song("Homecoming",                      "Green Day")),
 
                 // ── Venue 3: The Fox Theater, Oakland — 21st Century Breakdown ─
-                Show("Fox Theater: Set 1 (21st Century Breakdown)", After(6, 4), allSongs, warnings,
+                Show("Fox Theater: Set 1 (21st Century Breakdown)", After(32), allSongs, warnings,
                     Song("Last Night on Earth",              "Green Day"),
                     Song("Restless Heart Syndrome",         "Green Day"),
                     Song("Song of the Century",             "Green Day"),
                     Song("¿Viva La Gloria? (Little Girl)",  "Green Day")),
 
-                Show("Fox Theater: Set 2 (21st Century Breakdown)", After(7, 4), allSongs, warnings,
+                Show("Fox Theater: Set 2 (21st Century Breakdown)", After(36), allSongs, warnings,
                     Song("American Eulogy",       "Green Day"),
                     Song("Before the Lobotomy",   "Green Day"),
                     Song("Murder City",           "Green Day"),
                     Song("See the Light",         "Green Day")),
 
-                Show("Fox Theater: Set 3 (21st Century Breakdown)", After(8, 4), allSongs, warnings,
+                Show("Fox Theater: Set 3 (21st Century Breakdown)", After(40), allSongs, warnings,
                     Song("21st Century Breakdown",        "Green Day"),
                     Song("Horseshoes and Handgrenades",   "Green Day"),
                     Song("Peacemaker",                    "Green Day"),
                     Song("The Static Age",                "Green Day")),
 
                 // ── Bonus DLC ─────────────────────────────────────────────────
-                Show("Bonus DLC", After(9, 4), allSongs, warnings,
+                Show("Bonus DLC", After(44), allSongs, warnings,
                     Song("21 Guns",                   "Green Day"),
                     Song("East Jesus Nowhere",        "Green Day"),
                     Song("Know Your Enemy",           "Green Day"),
@@ -783,7 +784,7 @@ namespace Editor
         private static TourData BuildBeatlesTour(SongEntry[] allSongs, List<string> warnings)
         {
             TourUnlockCondition[] Always() => Array.Empty<TourUnlockCondition>();
-            TourUnlockCondition[] After(int showIdx, int count) => new[] { Completed(showIdx, count) };
+            TourUnlockCondition[] After(int totalCount) => new[] { Completed(totalCount) };
 
             var shows = new[]
             {
@@ -795,14 +796,14 @@ namespace Editor
                     Song("Twist and Shout",           "The Beatles")),
 
                 // ── Chapter 2: The Ed Sullivan Theater, New York (1964) ────────
-                Show("The Ed Sullivan Theater", After(0, 4), allSongs, warnings,
+                Show("The Ed Sullivan Theater", After(4), allSongs, warnings,
                     Song("I Want to Hold Your Hand",  "The Beatles"),
                     Song("I Wanna Be Your Man",        "The Beatles"),
                     Song("Can't Buy Me Love",          "The Beatles"),
                     Song("A Hard Day's Night",         "The Beatles")),
 
                 // ── Chapter 3: Shea Stadium, New York (1965) ──────────────────
-                Show("Shea Stadium", After(1, 4), allSongs, warnings,
+                Show("Shea Stadium", After(8), allSongs, warnings,
                     Song("Ticket to Ride",            "The Beatles"),
                     Song("Eight Days a Week",         "The Beatles"),
                     Song("I Feel Fine",               "The Beatles"),
@@ -810,7 +811,7 @@ namespace Editor
                     Song("If I Needed Someone",       "The Beatles")),
 
                 // ── Chapter 4: Budokan, Tokyo (1966) ──────────────────────────
-                Show("Budokan", After(2, 5), allSongs, warnings,
+                Show("Budokan", After(13), allSongs, warnings,
                     Song("Paperback Writer",          "The Beatles"),
                     Song("Drive My Car",              "The Beatles"),
                     Song("Taxman",                    "The Beatles"),
@@ -818,7 +819,7 @@ namespace Editor
                     Song("And Your Bird Can Sing",    "The Beatles")),
 
                 // ── Chapter 5: Abbey Road Studios '66–'67 (Dreamscape) ────────
-                Show("Abbey Road Studios '66-'67", After(3, 5), allSongs, warnings,
+                Show("Abbey Road Studios '66-'67", After(18), allSongs, warnings,
                     Song("Yellow Submarine",          "The Beatles"),
                     Song("Within You Without You / Tomorrow Never Knows", "The Beatles"),
                     Song("Lucy in the Sky with Diamonds", "The Beatles"),
@@ -827,7 +828,7 @@ namespace Editor
                     Song("Sgt. Pepper's Lonely Hearts Club Band / With a Little Help from My Friends", "The Beatles")),
 
                 // ── Chapter 6: Abbey Road Studios '67–'68 (Dreamscape) ────────
-                Show("Abbey Road Studios '67-'68", After(4, 6), allSongs, warnings,
+                Show("Abbey Road Studios '67-'68", After(24), allSongs, warnings,
                     Song("I Am the Walrus",           "The Beatles"),
                     Song("Hello Goodbye",            "The Beatles"),
                     Song("Hey Bulldog",               "The Beatles"),
@@ -836,7 +837,7 @@ namespace Editor
                     Song("While My Guitar Gently Weeps", "The Beatles")),
 
                 // ── Chapter 7: Abbey Road Studios '68–'69 (Dreamscape) ────────
-                Show("Abbey Road Studios '68-'69", After(5, 6), allSongs, warnings,
+                Show("Abbey Road Studios '68-'69", After(30), allSongs, warnings,
                     Song("Birthday",                  "The Beatles"),
                     Song("Helter Skelter",            "The Beatles"),
                     Song("Revolution",                "The Beatles"),
@@ -846,7 +847,7 @@ namespace Editor
                     Song("Come Together",             "The Beatles")),
 
                 // ── Chapter 8: The Rooftop Concert, London (1969) ─────────────
-                Show("The Rooftop Concert", After(6, 7), allSongs, warnings,
+                Show("The Rooftop Concert", After(37), allSongs, warnings,
                     Song("Don't Let Me Down",         "The Beatles"),
                     Song("I've Got a Feeling",        "The Beatles"),
                     Song("Dig a Pony",                "The Beatles"),
@@ -855,7 +856,7 @@ namespace Editor
                     Song("I Want You (She's So Heavy)", "The Beatles")),
 
                 // ── Encore: Career Finale ─────────────────────────────────────
-                Show("Encore — The End", After(7, 6), allSongs, warnings,
+                Show("Encore — The End", After(43), allSongs, warnings,
                     Song("The End",                   "The Beatles")),
             };
 
@@ -891,19 +892,17 @@ namespace Editor
         private static TourSongEntry Song(string name, string artist) =>
             new TourSongEntry { SongName = name, Artist = artist };
 
-        private static TourUnlockCondition Completed(int showIndex, int count) =>
+        private static TourUnlockCondition Completed(int count) =>
             new TourUnlockCondition
             {
                 TypeOfCondition = TourUnlockCondition.ConditionType.SongsCompleted,
-                ShowIndex = showIndex,
                 RequiredAmount = count,
             };
 
-        private static TourUnlockCondition Stars(int showIndex, int count) =>
+        private static TourUnlockCondition Stars(int count) =>
             new TourUnlockCondition
             {
                 TypeOfCondition = TourUnlockCondition.ConditionType.StarsEarned,
-                ShowIndex = showIndex,
                 RequiredAmount = count,
             };
 
@@ -930,8 +929,25 @@ namespace Editor
                 Formatting = Formatting.Indented,
                 Converters = { new Newtonsoft.Json.Converters.StringEnumConverter() },
             };
-            var json = JsonConvert.SerializeObject(tour, settings);
+
             var path = Path.Combine(ToursFolder, filename);
+            if (File.Exists(path))
+            {
+                try
+                {
+                    var existing = JsonConvert.DeserializeObject<TourData>(File.ReadAllText(path), settings);
+                    if (existing != null && existing.TourId != Guid.Empty)
+                    {
+                        tour.TourId = existing.TourId;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[TourGenerator] Could not read existing tour ID from {path}: {e.Message}");
+                }
+            }
+
+            var json = JsonConvert.SerializeObject(tour, settings);
             File.WriteAllText(path, json);
             Debug.Log($"[TourGenerator] Saved tour to {path}");
         }

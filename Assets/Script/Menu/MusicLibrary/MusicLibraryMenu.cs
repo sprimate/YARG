@@ -581,7 +581,7 @@ namespace YARG.Menu.MusicLibrary
             }
         }
 
-        private void Refresh()
+        protected virtual void Refresh()
         {
             SetRecommendedSongs();
             _searchField.Reset();
