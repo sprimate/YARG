@@ -33,7 +33,7 @@ namespace YARG
                     () => {
                         if (CurrentSelection != null)
                         {
-                            TourMenu.SelectedTourData = CurrentSelection.TourData;
+                            GlobalVariables.State.CurrentTour = CurrentSelection.TourData;
                             MenuManager.Instance.PushMenu(MenuManager.Menu.Tour, true);
                         }
                     }),

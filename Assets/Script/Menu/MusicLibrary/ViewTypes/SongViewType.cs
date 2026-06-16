@@ -165,7 +165,6 @@ namespace YARG.Menu.MusicLibrary
             GlobalVariables.State.ShowSongs.Clear();
             GlobalVariables.State.ShowSongs.Add(SongEntry);
             GlobalVariables.State.PlayingAShow = false;
-            GlobalVariables.State.PlayingInTour = this is TourSongViewType;
 
             MenuManager.Instance.PushMenu(MenuManager.Menu.DifficultySelect);
         }
@@ -225,6 +224,8 @@ namespace YARG.Menu.MusicLibrary
             if (_musicLibrary.ShouldDisplaySoloHighScores)
             {
                 var player = PlayerContainer.Players.First(e => !e.Profile.IsBot);
+                bool useAllResults = GlobalVariables.State.CurrentTour == null || SettingsManager.Settings.UseAllResultsInTour.Value;
+
                 IEnumerable<Core.Instrument> instruments;
                 if (ShowAllInstrumentHighScores)
                 {
@@ -237,19 +238,30 @@ namespace YARG.Menu.MusicLibrary
 
                 foreach (var instrument in instruments)
                 {
-                    var playerScoreRecord = ScoreContainer.GetHighScore(
-                        SongEntry.Hash, player.Profile.Id, instrument);
-                    var playerPercentRecord = ScoreContainer.GetBestPercentageScore(
-                        SongEntry.Hash, player.Profile.Id, instrument);
-
-                    if (playerScoreRecord is not null && (_playerScoreRecord is null || playerScoreRecord.Score > _playerScoreRecord.Score))
+                    PlayerScoreRecord potentialScoreRecord;
+                    PlayerScoreRecord potentialPercentRecord;
+                    if (useAllResults)
                     {
-                        _playerScoreRecord = playerScoreRecord;
+                        potentialScoreRecord = ScoreContainer.GetHighScore(
+                            SongEntry.Hash, player.Profile.Id, instrument);
+                        potentialPercentRecord = ScoreContainer.GetBestPercentageScore(
+                            SongEntry.Hash, player.Profile.Id, instrument);
+                    }
+                    else
+                    {
+                        var db = ScoreContainer.Database;
+                        potentialScoreRecord = db.QueryTourSongHighScore(GlobalVariables.State.CurrentTour.TourId, SongEntry.Hash, player.Profile.Id, instrument, false);
+                        potentialPercentRecord = db.QueryTourSongHighPercentage(GlobalVariables.State.CurrentTour.TourId, SongEntry.Hash, player.Profile.Id, instrument, true);
+
+                    }
+                    if (potentialScoreRecord is not null && (_playerScoreRecord is null || potentialScoreRecord.Score > _playerScoreRecord.Score))
+                    {
+                        _playerScoreRecord = potentialPercentRecord;
                     }
 
-                    if (playerPercentRecord is not null && (_playerPercentRecord is null || playerPercentRecord.GetPercent() > _playerPercentRecord.GetPercent()))
+                    if (potentialPercentRecord is not null && (_playerPercentRecord is null || potentialPercentRecord.GetPercent() > _playerPercentRecord.GetPercent()))
                     {
-                        _playerPercentRecord = playerPercentRecord;
+                        _playerPercentRecord = potentialPercentRecord;
                     }
                 }
             }

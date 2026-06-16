@@ -11,7 +11,7 @@ namespace YARG
         public void OpenTour()
         {
             MusicLibraryMenu.SetReload(MusicLibraryReloadState.Full);
-            TourMenu.SelectedTourData = ViewType.TourData;
+            GlobalVariables.State.CurrentTour = ViewType?.TourData;
             MenuManager.Instance.PushMenu(MenuManager.Menu.Tour, true);
             //Go to menu for the tour
         }

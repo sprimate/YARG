@@ -7,7 +7,9 @@ using YARG.Core.Game;
 using YARG.Core.Song;
 using YARG.Menu.ListMenu;
 using YARG.Menu.MusicLibrary;
+using YARG.Player;
 using YARG.Scores;
+using YARG.Settings;
 using YARG.Song;
 
 namespace YARG
@@ -18,8 +20,8 @@ namespace YARG
         public TextMeshProUGUI totalStarsText;
         public TextMeshProUGUI totalScoreText;
         public TextMeshProUGUI totalSongsText;
-        public static TourData SelectedTourData { get; set; }
-        static TourData setupTourData;
+        private TourData CurrentTourData { get => GlobalVariables.State.CurrentTour; set => GlobalVariables.State.CurrentTour = value; }
+        private TourData setupTourData;
         int totalStars;
         int totalScore;
         int totalSongs;
@@ -30,7 +32,7 @@ namespace YARG
 
         protected override void OnEnable()
         {
-            if (setupTourData == SelectedTourData)
+            if (setupTourData == CurrentTourData)
             {
                 SetReload(MusicLibraryReloadState.None);
             }
@@ -45,7 +47,7 @@ namespace YARG
         protected override void OnDisable()
         {
             base.OnDisable();
-            SelectedTourData = null;
+            CurrentTourData = null;
             SetReload(MusicLibraryReloadState.Full);
         }
 
@@ -96,21 +98,22 @@ namespace YARG
         protected override int ExtraListViewPadding => 15;
         protected override string GetSubheaderText()
         {
-            return SelectedTourData?.TourName;
+            return CurrentTourData?.TourName;
         }
+
         protected override List<ViewType> CreateViewList()
         {
             List<ViewType> list = new List<ViewType>();
-            if (SelectedTourData == null && setupTourData != null)
+            if (CurrentTourData == null && setupTourData != null)
             {
-                SelectedTourData = setupTourData;
+                CurrentTourData = setupTourData;
                 setupTourData = null;
             }
 
             bool showedFirstLocked = false;
             totalStars = totalScore = totalSongs = 0;
 
-            foreach (var show in SelectedTourData.Shows)
+            foreach (var show in CurrentTourData.Shows)
             {
                 List<SongEntry> showSongs = new();
                 foreach (var incomingEntry in show.Songs)
@@ -136,7 +139,7 @@ namespace YARG
                 var showName = show.ShowName;
                 if (isLocked)
                 {
-                    if (showedFirstLocked && !SelectedTourData.ShowAllLockedShows)
+                    if (showedFirstLocked && !CurrentTourData.ShowAllLockedShows)
                     {
                         continue;
                     }
@@ -160,7 +163,7 @@ namespace YARG
                 foreach (var song in showSongs)
                 {
                     var songType = new TourSongViewType(this, song, isLocked);
-                    var record = songType._PlayerScoreRecord;
+                    var record = GetPlayerScoreRecord(song);
                     if (record != null && !isLocked)
                     {
                         totalStars += record.Stars.GetStarCount();
@@ -173,8 +176,36 @@ namespace YARG
             }
 
             UpdateScores();
-            setupTourData = SelectedTourData;
+            setupTourData = CurrentTourData;
             return list;
+        }
+
+        PlayerScoreRecord GetPlayerScoreRecord(SongEntry song)
+        {
+            var db = ScoreContainer.Database;
+            var player = PlayerContainer.Players.First(e => !e.Profile.IsBot);
+            bool useAllResults = SettingsManager.Settings.UseAllResultsInTour.Value;
+            PlayerScoreRecord bestRecord = null;
+            foreach (var instrument in Enum.GetValues(typeof(Core.Instrument)).Cast<Core.Instrument>())
+            {
+                PlayerScoreRecord potentialRecord;
+                if (useAllResults)
+                {
+                    potentialRecord = db.QueryPlayerSongHighScore(song.Hash, player.Profile.Id, instrument, false);
+                }
+                else
+                {
+                    potentialRecord = db.QueryTourSongHighScore(CurrentTourData.TourId, song.Hash, player.Profile.Id, instrument, false);
+                }
+
+                if (potentialRecord != null && (bestRecord == null || potentialRecord.Score > bestRecord.Score))
+                {
+                    bestRecord = potentialRecord;
+                }
+            }
+
+            Debug.Log("Use ALl Results!!! " + useAllResults + " -> " + bestRecord);
+            return bestRecord;
         }
 
         bool IsConditionMet(TourUnlockCondition condition)

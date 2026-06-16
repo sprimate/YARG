@@ -135,6 +135,12 @@ namespace YARG.Scores
 
                 _db.InsertSoloRecords(playerEntries);
 
+                // If this score was recorded during a tour, link it to the tour
+                if (GlobalVariables.State.CurrentTour != null)
+                {
+                    _db.InsertTourGameRecord(GlobalVariables.State.CurrentTour.TourId, gameRecord.Id);
+                }
+
                 // Update cached high scores
                 var songChecksum = HashWrapper.Create(gameRecord.SongChecksum);
                 UpdateBandHighScore(songChecksum);
@@ -361,7 +367,7 @@ namespace YARG.Scores
         }
 
         // this is the same as GetMostPlayedSongs, but is limited to the one profile and returns the entire list
-        public static Dictionary<SongEntry,int> GetPlayedSongsForUserByPlaycount(YargProfile profile, SortOrdering ordering)
+        public static Dictionary<SongEntry, int> GetPlayedSongsForUserByPlaycount(YargProfile profile, SortOrdering ordering)
         {
             try
             {

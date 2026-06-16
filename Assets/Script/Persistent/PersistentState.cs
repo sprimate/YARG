@@ -19,12 +19,13 @@ namespace YARG
         public ReplayInfo? CurrentReplay;
 #nullable disable
 
+        public TourData CurrentTour { get; set; }
+
         public ScoreScreenStats? ScoreScreenStats;
 
         public float SongSpeed;
 
         public bool PlayingAShow { get; set; }
-        public bool PlayingInTour { get; set; }
         public List<SongEntry> ShowSongs { get; set; }
         public int ShowIndex { get; set; }
 

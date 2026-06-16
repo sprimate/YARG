@@ -75,6 +75,7 @@ namespace YARG.Scores
             _db.CreateTable<GameRecord>();
             _db.CreateTable<PlayerScoreRecord>();
             _db.CreateTable<PlayerInfoRecord>();
+            _db.CreateTable<TourGameRecord>();
 
             // Fill in missing percentage values
             int amountFilled = _db.Execute(
@@ -323,6 +324,95 @@ namespace YARG.Scores
                 (int) instrument
             );
             return result;
+        }
+
+        public void InsertTourGameRecord(Guid tourId, int gameRecordId)
+        {
+            Insert(new TourGameRecord
+            {
+                TourId = tourId,
+                GameRecordId = gameRecordId,
+            });
+        }
+
+        public PlayerScoreRecord QueryTourSongHighScore(
+            Guid tourId,
+            HashWrapper songChecksum,
+            Guid playerId,
+            Instrument instrument,
+            bool highestDifficultyOnly
+        )
+        {
+            string query =
+                @"SELECT PlayerScores.* FROM PlayerScores
+                INNER JOIN GameRecords
+                    ON PlayerScores.GameRecordId = GameRecords.Id
+                INNER JOIN TourGameRecords
+                    ON GameRecords.Id = TourGameRecords.GameRecordId
+                WHERE TourGameRecords.TourId = ?
+                    AND GameRecords.SongChecksum = ?
+                    AND PlayerScores.PlayerId = ?
+                    AND PlayerScores.Instrument = ?
+                    AND PlayerScores.IsReplay = 0";
+
+            if (highestDifficultyOnly)
+            {
+                query += " ORDER BY PlayerScores.Difficulty DESC, PlayerScores.Score DESC";
+            }
+            else
+            {
+                query += " ORDER BY PlayerScores.Score DESC";
+            }
+
+            query += " LIMIT 1";
+
+            return FindWithQuery<PlayerScoreRecord>(
+                query,
+                tourId,
+                songChecksum.HashBytes,
+                playerId,
+                (int) instrument
+            );
+        }
+
+        public PlayerScoreRecord QueryTourSongHighPercentage(
+            Guid tourId,
+            HashWrapper songChecksum,
+            Guid playerId,
+            Instrument instrument,
+            bool highestDifficultyOnly
+        )
+        {
+            string query =
+                @"SELECT PlayerScores.* FROM PlayerScores
+                INNER JOIN GameRecords
+                    ON PlayerScores.GameRecordId = GameRecords.Id
+                INNER JOIN TourGameRecords
+                    ON GameRecords.Id = TourGameRecords.GameRecordId
+                WHERE TourGameRecords.TourId = ?
+                    AND GameRecords.SongChecksum = ?
+                    AND PlayerScores.PlayerId = ?
+                    AND PlayerScores.Instrument = ?
+                    AND PlayerScores.IsReplay = 0";
+
+            if (highestDifficultyOnly)
+            {
+                query += " ORDER BY PlayerScores.Difficulty DESC, PlayerScores.Percent DESC, PlayerScores.IsFc DESC";
+            }
+            else
+            {
+                query += " ORDER BY PlayerScores.Percent DESC, PlayerScores.IsFc DESC";
+            }
+
+            query += " LIMIT 1";
+
+            return FindWithQuery<PlayerScoreRecord>(
+                query,
+                tourId,
+                songChecksum.HashBytes,
+                playerId,
+                (int) instrument
+            );
         }
 
         public PlayerScoreRecord QueryPlayerSongHighScore(

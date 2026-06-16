@@ -97,10 +97,10 @@ namespace YARG.Settings
 
             public ToggleSetting NoFailMode { get; } = new(false);
 
-            public ToggleSetting DisableDefaultBackground  { get; } = new(false);
-            public ToggleSetting DisableGlobalBackgrounds  { get; } = new(false);
+            public ToggleSetting DisableDefaultBackground { get; } = new(false);
+            public ToggleSetting DisableGlobalBackgrounds { get; } = new(false);
             public ToggleSetting DisablePerSongBackgrounds { get; } = new(false);
-            public ToggleSetting WaitForSongVideo          { get; } = new(true);
+            public ToggleSetting WaitForSongVideo { get; } = new(true);
 
 
             public SliderSetting InputPollingFrequency { get; } = new(250f, 60f, 1000f,
@@ -116,14 +116,14 @@ namespace YARG.Settings
             public ToggleSetting ShowActivePlayers { get; } = new(false, ShowActivePlayersCallback);
             public ToggleSetting ShowActiveBots { get; } = new(false, ShowActiveBotsCallback);
 
-            public ToggleSetting ReconnectProfiles  { get; } = new(true);
+            public ToggleSetting ReconnectProfiles { get; } = new(true);
             public ToggleSetting AutoCreateProfiles { get; } = new(true);
 
             public ToggleSetting ReduceNoteSpeedByDifficulty { get; } = new(true);
 
             public ToggleSetting LearningGuides { get; } = new(false);
 
-            public SliderSetting ShowCursorTimer      { get; } = new(2f, 0f, 5f);
+            public SliderSetting ShowCursorTimer { get; } = new(2f, 0f, 5f);
 
             public ToggleSetting PauseOnDeviceDisconnect { get; } = new(true);
             public ToggleSetting PauseOnFocusLoss { get; } = new(true);
@@ -148,8 +148,9 @@ namespace YARG.Settings
             public ToggleSetting UseFullDirectoryForPlaylists { get; } = new(false);
 
             public ToggleSetting ShowFavoriteButton { get; } = new(true);
+            public ToggleSetting UseAllResultsInTour { get; } = new(true);
 
-            public SliderSetting PlayAShowTimeout { get; } = new (10.0f, 1.0f, 30.0f);
+            public SliderSetting PlayAShowTimeout { get; } = new(10.0f, 1.0f, 30.0f);
             public ToggleSetting RequireAllDifficulties { get; } = new(true);
 
             public DropdownSetting<DifficultyRingMode> DifficultyRings { get; }
@@ -261,9 +262,9 @@ namespace YARG.Settings
 
             #region Graphics
 
-            public ToggleSetting VSync       { get; } = new(true, VSyncCallback);
-            public IntSetting    FpsCap      { get; } = new(60, 0, onChange: FpsCapCallback);
-            public IntSetting    VenueFpsCap { get; } = new(60, 1);
+            public ToggleSetting VSync { get; } = new(true, VSyncCallback);
+            public IntSetting FpsCap { get; } = new(60, 0, onChange: FpsCapCallback);
+            public IntSetting VenueFpsCap { get; } = new(60, 1);
 
             public DropdownSetting<FullScreenMode> FullscreenMode { get; }
                 = new(FullScreenMode.FullScreenWindow, FullscreenModeCallback)
@@ -417,9 +418,9 @@ namespace YARG.Settings
             #endregion
 
             #region Lighting Peripherals
-            public ToggleSetting StageKitEnabled  { get; } = new(true, StageKitEnabledCallback);
-            public ToggleSetting DMXEnabled       { get; } = new(false, DMXEnabledCallback);
-            public ToggleSetting RB3EEnabled      { get; } = new(false, RB3EEnabledCallback);
+            public ToggleSetting StageKitEnabled { get; } = new(true, StageKitEnabledCallback);
+            public ToggleSetting DMXEnabled { get; } = new(false, DMXEnabledCallback);
+            public ToggleSetting RB3EEnabled { get; } = new(false, RB3EEnabledCallback);
 
             public DMXChannelsSetting DMXDimmerChannels { get; } = new(
                 new[] { 01, 09, 17, 25, 33, 41, 49, 57 }, v => SacnInterpreter.Instance.DimmerChannels = v);
@@ -509,7 +510,7 @@ namespace YARG.Settings
 
             #region Experimental
 
-            public ToggleSetting DataStreamEnable { get; } = new(false, DataStreamEnableCallback );
+            public ToggleSetting DataStreamEnable { get; } = new(false, DataStreamEnableCallback);
             public DropdownSetting<BandComboType> BandComboTypeSetting { get; } = new(BandComboType.Off)
             {
                 BandComboType.Off,

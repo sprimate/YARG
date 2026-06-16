@@ -402,7 +402,7 @@ namespace YARG.Menu.ScoreScreen
                     if (!_analyzingReplay)
                     {
                         GlobalVariables.State.ShowIndex++;
-                        if (GlobalVariables.State.PlayingInTour)
+                        if (GlobalVariables.State.CurrentTour != null)
                         {
                             Gameplay.GameManager.ForceQuitSong();//Goes back to menu after clearing out whatever it needed to
                         }

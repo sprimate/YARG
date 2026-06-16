@@ -741,6 +741,7 @@
             "ExportSongs": "Export Songs List",
             "PathsAndFolders": "Paths and Folders",
             "MusicLibrary": "Music Library",
+            "Tours": "Tours",
             "PlayAShow": "Play A Show",
             "ScanningOptions": "Scanning Options",
             "RB3E": "RB3E Settings",
@@ -1086,6 +1087,10 @@
             "ShowFavoriteButton": {
                 "Name": "Show Favorite Button",
                 "Description": "Shows and hides the favorite button in the Music Library. Songs can still be favorited in the \"More Options\" menu when this button is hidden."
+            },
+            "UseAllResultsInTour": {
+                "Name": "Use All Song Results In Tour",
+                "Description": "When enabled, if a song was completed outside a Tour (like in Quickplay or another Tour), it'll still count as completed within all Tours. If disabled, only songs completed within the selected tour will be used."
             },
             "ShowHitWindow": {
                 "Name": "Show Hit Window",
