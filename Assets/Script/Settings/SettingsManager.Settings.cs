@@ -148,7 +148,8 @@ namespace YARG.Settings
             public ToggleSetting UseFullDirectoryForPlaylists { get; } = new(false);
 
             public ToggleSetting ShowFavoriteButton { get; } = new(true);
-            public ToggleSetting UseAllResultsInTour { get; } = new(true);
+            public ToggleSetting UseAllResultsInTour { get; } = new(true,
+                _ => MusicLibraryMenu.SetReload(MusicLibraryReloadState.Full));
             public ToggleSetting HideLockedTourSongsInQuickplay { get; } = new(false);
 
             public SliderSetting PlayAShowTimeout { get; } = new(10.0f, 1.0f, 30.0f);

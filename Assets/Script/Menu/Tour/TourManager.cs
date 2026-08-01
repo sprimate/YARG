@@ -24,24 +24,39 @@ namespace YARG
     {
         private static Dictionary<Guid, TourProgress> tourProgressCache = new Dictionary<Guid, TourProgress>();
         private static HashSet<SongEntry> UnlockedSongsCache = new();
+        private static bool? cachedUseAllResults;
+        private static bool isFullCache;
 
         public static async UniTask UpdateTourProgressCache()
         {
             await UniTask.SwitchToThreadPool();
+
+            RebuildTourProgressCache();
+
+            await UniTask.SwitchToMainThread();
+        }
+
+        private static void RebuildTourProgressCache()
+        {
             tourProgressCache.Clear();
             UnlockedSongsCache.Clear();
+            cachedUseAllResults = SettingsManager.Settings.UseAllResultsInTour.Value;
 
             foreach (var tourData in GetAllTours())
             {
                 UpdateTourProgressCache(tourData);
             }
 
-            await UniTask.SwitchToMainThread();
+            isFullCache = true;
         }
 
         public static TourProgress UpdateTourProgressCache(TourData tourData, params SongEntry[] modifiedSongs)
         {
-            tourProgressCache[tourData.TourId] = CalculateTourProgress(tourData, modifiedSongs);
+            EnsureCacheUsesCurrentSettings();
+
+            // Always recalculate the tour from its score records. Mutating the previous totals for a
+            // single song double-counts replays and leaves previously locked shows in the locked set.
+            tourProgressCache[tourData.TourId] = CalculateTourProgress(tourData);
             return tourProgressCache[tourData.TourId];
         }
 
@@ -51,6 +66,8 @@ namespace YARG
         }
         public static TourProgress GetTourProgress(Guid tourId)
         {
+            EnsureCacheUsesCurrentSettings();
+
             if (tourProgressCache.TryGetValue(tourId, out var p))
             {
                 return p;
@@ -69,11 +86,9 @@ namespace YARG
             }
         }
 
-        private static TourProgress CalculateTourProgress(TourData tourData, params SongEntry[] modifiedSongs)
+        private static TourProgress CalculateTourProgress(TourData tourData)
         {
-            bool fullRefresh = modifiedSongs?.Any() != true;
-            TourProgress progress = fullRefresh ? new TourProgress() : GetTourProgress(tourData);
-            HashSet<SongEntry> songsToCheck = fullRefresh ? null : new HashSet<SongEntry>(modifiedSongs);
+            TourProgress progress = new TourProgress();
             foreach (var show in tourData.Shows)
             {
                 bool isLocked = show.UnlockConditions != null && show.UnlockConditions.Length > 0 && show.UnlockConditions.Any(condition => !condition.IsConditionMet(progress));
@@ -84,13 +99,6 @@ namespace YARG
 
                 foreach (var song in show.GetSongEntries())
                 {
-                    if (!fullRefresh && !songsToCheck.Contains(song))
-                    {
-                        Debug.Log($"Skipping song {song.Artist} - {song.Name} since it isn't one of the modified songs");
-                        // If this song isn't one of the modified songs, then we can skip it since it won't have changed anything
-                        continue;
-                    }
-
                     var record = GetPlayerScoreRecord(song, tourData);
                     if (record != null && !isLocked)
                     {
@@ -138,7 +146,29 @@ namespace YARG
 
         public static bool IsSongLocked(SongEntry song)
         {
+            EnsureCacheUsesCurrentSettings();
+            if (!isFullCache)
+            {
+                // Quickplay needs the union of unlocked songs from every tour, not just whichever
+                // tour may have been opened since the result-source setting changed.
+                RebuildTourProgressCache();
+            }
+
             return !UnlockedSongsCache.Contains(song);
+        }
+
+        private static void EnsureCacheUsesCurrentSettings()
+        {
+            bool useAllResults = SettingsManager.Settings.UseAllResultsInTour.Value;
+            if (cachedUseAllResults == useAllResults)
+            {
+                return;
+            }
+
+            tourProgressCache.Clear();
+            UnlockedSongsCache.Clear();
+            cachedUseAllResults = useAllResults;
+            isFullCache = false;
         }
 
         public static void UpdateTourProgress(Guid tourId, TourProgress progress)

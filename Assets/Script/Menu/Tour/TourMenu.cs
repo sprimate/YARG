@@ -22,6 +22,7 @@ namespace YARG
         public TextMeshProUGUI totalSongsText;
         private TourData CurrentTourData { get => GlobalVariables.State.CurrentTour; set => GlobalVariables.State.CurrentTour = value; }
         private static TourData lastTourData;
+        private static bool? lastUseAllResults;
         public static bool IsLocked(ViewType viewType)
         {
             return viewType is TourSongViewType songViewType && songViewType.isLocked;
@@ -29,7 +30,8 @@ namespace YARG
 
         protected override void OnEnable()
         {
-            if (lastTourData == CurrentTourData)
+            if (lastTourData == CurrentTourData &&
+                lastUseAllResults == SettingsManager.Settings.UseAllResultsInTour.Value)
             {
                 SetReload(MusicLibraryReloadState.None);
             }
@@ -148,6 +150,7 @@ namespace YARG
 
             UpdateScoresTexts();
             lastTourData = CurrentTourData;
+            lastUseAllResults = SettingsManager.Settings.UseAllResultsInTour.Value;
             Debug.LogWarning("SET LAST TOUR DATA TO " + lastTourData?.TourName);
             return list;
         }

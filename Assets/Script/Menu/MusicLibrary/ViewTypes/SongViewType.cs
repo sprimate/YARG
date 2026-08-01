@@ -261,7 +261,7 @@ namespace YARG.Menu.MusicLibrary
                     }
                     if (potentialScoreRecord is not null && (_playerScoreRecord is null || potentialScoreRecord.Score > _playerScoreRecord.Score))
                     {
-                        _playerScoreRecord = potentialPercentRecord;
+                        _playerScoreRecord = potentialScoreRecord;
                     }
 
                     if (potentialPercentRecord is not null && (_playerPercentRecord is null || potentialPercentRecord.GetPercent() > _playerPercentRecord.GetPercent()))
