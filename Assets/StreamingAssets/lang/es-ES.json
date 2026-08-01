@@ -268,6 +268,7 @@
             "MessageOfTheDay": "<align=center><size=32><b>Welcome to v0.14!</b></size></align>\n\nv0.14 is a major update that adds 5 Lane Keys, a new MIDI Drums profile type, easier instrument setup, support for 3D venue events, performance improvements when using multiple highways, many visual improvements, and more.\n\n<b>If you have any feedback or find any bugs, please let us know on Discord or GitHub.</b>\n\nHappy YARGin'!",
             "Options": {
                 "Quickplay": "Partida Rápida",
+                "Tour": "Gira",
                 "Practice": "Práctica",
                 "Profiles": "Perfiles",
                 "History": "Historial",
@@ -367,6 +368,11 @@
             "RestartSong": "Reiniciar canción",
             "EndSetlistEarly": "Finalizar lista de canciones"
         },
+        "TourList": {
+            "CreateTour": "Crear Gira",
+            "EditTour": "Editar Gira",
+            "CloudTours": "Giras en la Nube"
+        },
         "Settings": {
             "NoFolder": "<i>Sin Carpeta</i>",
             "SearchHeader": {
@@ -374,6 +380,7 @@
                 "Results": "Resultados"
             },
             "SongCount": "{0:N0} <alpha=#60>Canciones",
+            "TourCount": "{0:N0} <alpha=#60>Giras",
             "ScanNeeded": "<alpha=#60>Escaneo Necesario",
             "DMXInfo": "Cambio de señal DMX y valores de canal de postprocesamiento:\n\n<b>Cambio de Señal:</b>\n\n0 - Sin señal\n10 - Menú\n20 - Puntuación\n30 - Introducción\n40 - Estrofa\n50 - Coro\n60 - Frío (bucle)\n70 - Cálido (bucle)\n80 - Frío (manual)\n90 - Cálido (manual)\n100 - Discordia\n110 - Pisotón\n120 - Predeterminado\n130 - Armonía\n140 - Frenesí\n150 - Siluetas\n160 - Siluetas destacadas\n170 - Reflectores\n180 - Barrido\n190 - Apagón (rápido)\n200 - Apagón (lento)\n210 - Apagón (foco)\n220 - Resplandor (lento)\n230 - Resplandor (rápido)\n240 - Gran Final de Rock\n\nPara el estado de Strobe y Niebla, consulta sus respectivos canales.\n\n<b>Postprocesamiento:</b>\n\n0 - Predeterminado\n\nEfectos básicos\n4 - Resplandor\n14 - Brillante\n24 - Contraste\n34 - Espejo\n44 - Negativo Fotográfico\n54 - Posterizar\n\n\nFiltros/efectos de color\n64 - Blanco y Negro\n74 - Tono Sepia\n84 - Tono Plateado\n94 - Blanco y Negro entrecortado\n104 - Negativo Fotográfico Rojo y Negro\n114 - Polarizado Blanco y Negro\n124 - Polarizado Rojo y Azul\n134 - Rojo Desaturado\n144 - Azul Desaturado\n154 - Contraste Rojo\n164 - Contraste Verde\n174 - Contraste Azul\n\nGranulado\n184 - Película Granulada\n194 - Aberración Cromática Granulada\n\nLíneas de escaneo\n204 - Líneas de Escaneo\n214 - Líneas de Escaneo Blanco y Negro\n224 - Líneas de Escaneo Azul\n234 - Líneas de Escaneo de Seguridad\n\nEstelas\n244 - Estelas\n252 - Estelas Largas\n253 - Estelas Desaturadas\n254 - Estelas Parpadeantes\n255 - Estelas Espaciales\n\nConsulta los documentos de YARG para más información: https://docs.yarg.in/en/DMX"
         }
@@ -740,6 +747,7 @@
             "ExportSongs": "Exportar lista de canciones",
             "PathsAndFolders": "Rutas y Carpetas",
             "MusicLibrary": "Biblioteca de Música",
+            "Tours": "Giras",
             "PlayAShow": "Jugar un Show",
             "ScanningOptions": "Opciones de Escaneo",
             "RB3E": "Ajustes de RB3E",
@@ -1085,6 +1093,14 @@
             "ShowFavoriteButton": {
                 "Name": "Mostrar Botón de Favoritos",
                 "Description": "Muestra y oculta el botón de favoritos en la Biblioteca de Música. Se pueden marcar canciones como favoritas en el menú \"Más Opciones\" cuando este botón está oculto."
+            },
+            "UseAllResultsInTour": {
+                "Name": "Usar Todos los Resultados de Canciones en Gira",
+                "Description": "Si se habilita, si una canción se completó fuera de una Gira (como en Partida Rápida u otra Gira), seguirá contando como completada dentro de todas las Giras. Si se deshabilita, solo se usarán las canciones completadas dentro de la gira seleccionada."
+            },
+            "HideLockedTourSongsInQuickplay": {
+                "Name": "Ocultar Canciones de Gira Bloqueadas en Partida Rápida",
+                "Description": "Si se habilita, las canciones deberán desbloquearse en las Giras para estar disponibles en Partida Rápida. Si se deshabilita, se mostrarán todas las canciones en Partida Rápida."
             },
             "ShowHitWindow": {
                 "Name": "Mostrar Ventana de Golpe",

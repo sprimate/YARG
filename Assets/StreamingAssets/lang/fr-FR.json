@@ -268,6 +268,7 @@
             "MessageOfTheDay": "<align=center><size=32><b>Welcome to v0.14!</b></size></align>\n\nv0.14 is a major update that adds 5 Lane Keys, a new MIDI Drums profile type, easier instrument setup, support for 3D venue events, performance improvements when using multiple highways, many visual improvements, and more.\n\n<b>If you have any feedback or find any bugs, please let us know on Discord or GitHub.</b>\n\nHappy YARGin'!",
             "Options": {
                 "Quickplay": "Partie rapide",
+                "Tour": "Tournée",
                 "Practice": "Entraînement",
                 "Profiles": "Profils",
                 "History": "Historique",
@@ -367,6 +368,11 @@
             "RestartSong": "Recommencer",
             "EndSetlistEarly": "Terminer la setlist"
         },
+        "TourList": {
+            "CreateTour": "Créer une tournée",
+            "EditTour": "Modifier la tournée",
+            "CloudTours": "Tournées en ligne"
+        },
         "Settings": {
             "NoFolder": "<i>Aucun dossier</i>",
             "SearchHeader": {
@@ -374,6 +380,7 @@
                 "Results": "Résultats"
             },
             "SongCount": "{0:N0} <alpha=#60>titres",
+            "TourCount": "{0:N0} <alpha=#60>tournées",
             "ScanNeeded": "<alpha=#60>Scan nécessaire",
             "DMXInfo": "Changement de signaux DMX et valeurs des canaux de post-traitement :\n\n<b>Signaux :</b>\n\n0 - Aucun signal\n10 - Menu\n20 - Score\n30 - Intro\n40 - Couplet\n50 - Refrain\n60 - Froid (boucle)\n70 - Chaud (boucle)\n80 - Froid (manuel)\n90 - Chaud (manuel)\n100 - Dischord\n110 - Stomp\n120 - Défaut\n130 - Harmonie\n140 - Frénésie\n150 - Silhouettes\n160 - Silhouettes Spotlight\n170 - Projecteurs\n180 - Balayage\n190 - Blackout (rapide)\n200 - Blackout (lent)\n210 - Blackout (spotlight)\n220 - Flare (lent)\n230 - Flare (rapide)\n240 - Grand final\n\nPour les status du Strobe et du Fog, écouter les canaux respectifs.\n\n<b>Post-traitement:</b>\n\n0 - Défaut\n\nEffets basiques\n4 - Bloom\n14 - Clair\n24 - Contraste\n34 - Miroir\n44 - Négatif\n54 - Posterize\n\n\nFiltres/effets colorés\n64 - Noir et Blanc\n74 - Tons Sépia\n84 - Tons Argentés\n94 - Noir et Blanc Choppy\n104 - Négatif Rouge et Noir\n114 - Noir et Blanc Polarisé\n124 - Rouge et Bleu Polarisé\n134 - Rouge Désaturé\n144 - Bleu Désaturé\n154 - Contraste Rouge\n164 - Contraste Vert\n174 - Contraste Bleu\n\nGrain\n184 - Grain de film\n194 - Aberration chromatique\n\nScanlines\n204 - Scanlines\n214 - Scanlines Noir et Blanc\n224 - Scanlines Bleu\n234 - Scanlines Sécurité\n\nTrainées\n244 - Trainées\n252 - Trainées Longues\n253 - Trainées Désaturées\n254 - Trainées vacillantes\n255 - Trainées Spatiales\n\nPour plus d'informations, voir la doc de YARG : https://docs.yarg.in/en/DMX"
         }
@@ -740,6 +747,7 @@
             "ExportSongs": "Export Songs List",
             "PathsAndFolders": "Chemins et dossiers",
             "MusicLibrary": "Bibliothèque de musiques",
+            "Tours": "Tournées",
             "PlayAShow": "Jouer un concert",
             "ScanningOptions": "Options de scan",
             "RB3E": "Paramètres RB3E",
@@ -1085,6 +1093,14 @@
             "ShowFavoriteButton": {
                 "Name": "Afficher le bouton de favoris",
                 "Description": "Affiche le bouton de favoris dans la bibliothèque de musique. Les titres peuvent toujours être mis en favoris depuis le menu \"Plus d'options\" lorsque le bouton est masqué."
+            },
+            "UseAllResultsInTour": {
+                "Name": "Utiliser tous les résultats de chansons en tournée",
+                "Description": "Si activé, si une chanson a été terminée en dehors d'une tournée (comme en partie rapide ou dans une autre tournée), elle comptera quand même comme terminée dans toutes les tournées. Si désactivé, seules les chansons terminées dans la tournée sélectionnée seront utilisées."
+            },
+            "HideLockedTourSongsInQuickplay": {
+                "Name": "Masquer les chansons de tournée verrouillées en partie rapide",
+                "Description": "Si activé, les chansons devront être déverrouillées dans les tournées pour être disponibles en partie rapide. Si désactivé, toutes les chansons seront affichées en partie rapide."
             },
             "ShowHitWindow": {
                 "Name": "Afficher la fenêtre de touche",

@@ -268,6 +268,7 @@
             "MessageOfTheDay": "<align=center><size=32><b>Welcome to v0.14!</b></size></align>\n\nv0.14 is a major update that adds 5 Lane Keys, a new MIDI Drums profile type, easier instrument setup, support for 3D venue events, performance improvements when using multiple highways, many visual improvements, and more.\n\n<b>If you have any feedback or find any bugs, please let us know on Discord or GitHub.</b>\n\nHappy YARGin'!",
             "Options": {
                 "Quickplay": "Jogar",
+                "Tour": "Turnê",
                 "Practice": "Praticar",
                 "Profiles": "Perfis",
                 "History": "Histórico",
@@ -367,6 +368,11 @@
             "RestartSong": "Reiniciar música",
             "EndSetlistEarly": "Terminar setlist"
         },
+        "TourList": {
+            "CreateTour": "Criar Turnê",
+            "EditTour": "Editar Turnê",
+            "CloudTours": "Turnês na Nuvem"
+        },
         "Settings": {
             "NoFolder": "<i>Nenhuma Pasta</i>",
             "SearchHeader": {
@@ -374,6 +380,7 @@
                 "Results": "Resultados"
             },
             "SongCount": "{0:N0} <alpha=#60>Músicas",
+            "TourCount": "{0:N0} <alpha=#60>Turnês",
             "ScanNeeded": "<alpha=#60>Scan Necessário",
             "DMXInfo": "Mudança de sinalização DMX e pós-processamento de valores de canal:\n\n<b>Mudança de Sinalização:</b>\n\n0 - Sem sinalização\n10 - Menu\n20 - Pontuação\n30 - Intro\n40 - Verso\n50 - Refrão\n60 - Frio (loop)\n70 - Quente (loop)\n80 - Frio (manual)\n90 - Quente (manual)\n100 - Discórdia\n110 - Pisão\n120 - Padrão\n130 - Harmonia\n140 - Frenesi\n150 - Silhuetas\n160 - Holofote de Silhuetas\n170 - Luzes de Busca\n180 - Varredura\n190 - Blackout (rápido)\n200 - Blackout (lento)\n210 - Blackout (holofote)\n220 - Sinalizador (lento)\n230 - Sinalizador (rápido)\n240 - Big Rock Ending\n\nPara obter o status de Estroboscópio e Neblina, ouça seus respectivos canais.\n\n<b>Pós-Processamento:</b>\n\n0 - Padrão\n\nEfeitos básicos\n4 - Florescência\n14 - Brilhante\n24 - Contraste\n34 - Espelho\n44 - Foto Negativa\n54 - Posterizar\n\n\nEfeitos/filtros de cor\n64 - Preto e Branco\n74 - Tom Sépia\n84 - Tom Prata\n94 - Preto e Branco Agitado\n104 - Foto Negativa Vermelho e Preto\n114 - Preto e Branco Polarizado\n124 - Vermelho e Azul Polarizado\n134 - Vermelho Dessaturado\n144 - Azul Dessaturado\n154 - Vermelho Contraste\n164 - Verde Contraste\n174 - Azul Contraste\n\nGranulado\n184 - Filme Granulado\n194 - Aberração Cromática Granulada\n\nLinhas de varredura\n204 - Linhas de varredura\n214 - Linhas de varredura Preta e Branca\n224 - Linhas de varredura Azul\n234 - Linhas de varredura Segurança\n\nTrilhas\n244 - Trilhas\n252 - Trilhas Longas\n253 - Trilhas Dessaturadas\n254 - Trilhas Cintilantes\n255 - Trails Spacey\n\nPara mais informações, leia o docs do YARG: https://docs.yarg.in/en/DMX"
         }
@@ -740,6 +747,7 @@
             "ExportSongs": "Exportar Lista de Músicas",
             "PathsAndFolders": "Caminhos e Pastas",
             "MusicLibrary": "Biblioteca",
+            "Tours": "Turnês",
             "PlayAShow": "Tocar Um Show",
             "ScanningOptions": "Opções de Escaneamento",
             "RB3E": "Ajustes RB3E",
@@ -1085,6 +1093,14 @@
             "ShowFavoriteButton": {
                 "Name": "Exibir Botão de Favorito",
                 "Description": "Mostra e oculta o botão favorito na Biblioteca de Músicas. As músicas ainda podem ser adicionadas no menu \"Mais Opções\" quando este botão está oculto."
+            },
+            "UseAllResultsInTour": {
+                "Name": "Usar Todos os Resultados de Músicas na Turnê",
+                "Description": "Quando ativado, se uma música foi concluída fora de uma Turnê (como no Jogar ou em outra Turnê), ela ainda contará como concluída em todas as Turnês. Quando desativado, apenas músicas concluídas dentro da turnê selecionada serão usadas."
+            },
+            "HideLockedTourSongsInQuickplay": {
+                "Name": "Ocultar Músicas de Turnê Bloqueadas no Jogar",
+                "Description": "Quando ativado, as músicas precisarão ser desbloqueadas nas Turnês para estarem disponíveis no Jogar. Quando desativado, todas as músicas serão exibidas no Jogar."
             },
             "ShowHitWindow": {
                 "Name": "Exibir Janela de Acerto",

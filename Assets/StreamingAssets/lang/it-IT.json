@@ -268,6 +268,7 @@
             "MessageOfTheDay": "<align=center><size=32><b>Welcome to v0.14!</b></size></align>\n\nv0.14 is a major update that adds 5 Lane Keys, a new MIDI Drums profile type, easier instrument setup, support for 3D venue events, performance improvements when using multiple highways, many visual improvements, and more.\n\n<b>If you have any feedback or find any bugs, please let us know on Discord or GitHub.</b>\n\nHappy YARGin'!",
             "Options": {
                 "Quickplay": "Partita Veloce",
+                "Tour": "Tour",
                 "Practice": "Pratica",
                 "Profiles": "Profili",
                 "History": "Storico",
@@ -367,6 +368,11 @@
             "RestartSong": "Riavvia Canzone",
             "EndSetlistEarly": "Termina Scaletta"
         },
+        "TourList": {
+            "CreateTour": "Crea Tour",
+            "EditTour": "Modifica Tour",
+            "CloudTours": "Tour Cloud"
+        },
         "Settings": {
             "NoFolder": "<i>Nessuna Cartella</i>",
             "SearchHeader": {
@@ -374,6 +380,7 @@
                 "Results": "Risultati"
             },
             "SongCount": "{0:N0} <alpha=#60>Brani",
+            "TourCount": "{0:N0} <alpha=#60>Tour",
             "ScanNeeded": "<alpha=#60>Scansione Necessaria",
             "DMXInfo": "Cambio di cue DMX e valori dei canali di post-processing:\n\n<b>Cambio Cue:</b>\n\n0 - Nessun Cue\n10 - Menu\n20 - Punteggio\n30 - Intro\n40 - Strofa\n50 - Coro\n60 - Cool (loop)\n70 - Warm (loop)\n80 - Cool (manual)\n90 - Warm (manual)\n100 - Dischord\n110 - Stomp\n120 - Default\n130 - Armonia\n140 - Frenzy\n150 - Silhouettes\n160 - Silhouettes Spotlight\n170 - Searchlights\n180 - Sweep\n190 - Blackout (veloce)\n200 - Blackout (lento)\n210 - Blackout (spotlight)\n220 - Flare (lento)\n230 - Flare (veloce)\n240 - Gran Finale Rock\n\nPer lo stato di Strobe e Fog, ascolta i loro rispettivi canali.\n\n<b>Post-Processing:</b>\n\n0 - Default\n\nEffetti Base\n4 - Bloom\n14 - Bright\n24 - Contrast\n34 - Mirror\n44 - PhotoNegative\n54 - Posterize\n\n\nFiltri Effetti/Filtri\n64 - Bianco e Nero\n74 - Seppia\n84 - Argentato\n94 - Bianco e Nero Scattoso\n104 - Rosso Negativo e Nero\n114 - Bianco e Nero Polarizzato\n124 - Blu e Rosso Polarizzato\n134 - Rosso Desaturato\n144 - Blu Desaturato\n154 - Contrasto Rosso\n164 - Contrasto Verde\n174 - Contrasto Blu\n\nEffetto Pellicola\n184 - Pellicola Granulosa\n194 - Aberrazione Cromatica Granulosa\n\nEffetto CRT\n204 - CRT\n214 - CRT Bianco e Nero\n224 - CRT Blu\n234 - CRT Sicurezza\n\nTracce\n244 - Tracce\n252 - Tracce Lunghe\n253 - Tracce Desaturate\n254 - Tracce Intermittenti\n255 - Tracce Spaziali\n\nSee YARG docs for more information: https://docs.yarg.in/en/DMX"
         }
@@ -740,6 +747,7 @@
             "ExportSongs": "Export Songs List",
             "PathsAndFolders": "Percorsi e Cartelle",
             "MusicLibrary": "Libreria Musicale",
+            "Tours": "Tour",
             "PlayAShow": "Riproduci Uno Show",
             "ScanningOptions": "Opzioni di Scansione",
             "RB3E": "Impostazioni RB3E",
@@ -1085,6 +1093,14 @@
             "ShowFavoriteButton": {
                 "Name": "Mostra il Pulsante dei Preferiti",
                 "Description": "Mostra o nascondi il tasto dei preferiti nella libreria musicale. Puoi comunque mettere le canzoni tra i preferiti nel menù \"Più Opzioni\"  quando questo tasto è nascoto."
+            },
+            "UseAllResultsInTour": {
+                "Name": "Usa Tutti i Risultati delle Canzoni nel Tour",
+                "Description": "Se abilitato, se una canzone è stata completata al di fuori di un Tour (come in Partita Veloce o in un altro Tour), conterà comunque come completata in tutti i Tour. Se disabilitato, verranno usate solo le canzoni completate all'interno del tour selezionato."
+            },
+            "HideLockedTourSongsInQuickplay": {
+                "Name": "Nascondi Canzoni del Tour Bloccate in Partita Veloce",
+                "Description": "Se abilitato, le canzoni dovranno essere sbloccate nei Tour per essere disponibili in Partita Veloce. Se disabilitato, tutte le canzoni saranno mostrate in Partita Veloce."
             },
             "ShowHitWindow": {
                 "Name": "Visualizza Riquadro di Precisione",

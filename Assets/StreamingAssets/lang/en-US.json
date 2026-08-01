@@ -368,6 +368,11 @@
             "RestartSong": "Restart Song",
             "EndSetlistEarly": "End Setlist"
         },
+        "TourList": {
+            "CreateTour": "Create Tour",
+            "EditTour": "Edit Tour",
+            "CloudTours": "Cloud Tours"
+        },
         "Settings": {
             "NoFolder": "<i>No Folder</i>",
             "SearchHeader": {

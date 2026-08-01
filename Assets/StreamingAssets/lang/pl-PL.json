@@ -268,6 +268,7 @@
             "MessageOfTheDay": "<align=center><size=32><b>Welcome to v0.14!</b></size></align>\n\nv0.14 is a major update that adds 5 Lane Keys, a new MIDI Drums profile type, easier instrument setup, support for 3D venue events, performance improvements when using multiple highways, many visual improvements, and more.\n\n<b>If you have any feedback or find any bugs, please let us know on Discord or GitHub.</b>\n\nHappy YARGin'!",
             "Options": {
                 "Quickplay": "Szybka gra",
+                "Tour": "Trasa",
                 "Practice": "Ćwicz",
                 "Profiles": "Profile",
                 "History": "Historia",
@@ -367,6 +368,11 @@
             "RestartSong": "Spróbuj ponownie",
             "EndSetlistEarly": "Zakończ setlistę"
         },
+        "TourList": {
+            "CreateTour": "Utwórz trasę",
+            "EditTour": "Edytuj trasę",
+            "CloudTours": "Trasy w chmurze"
+        },
         "Settings": {
             "NoFolder": "<i>Brak folderu</i>",
             "SearchHeader": {
@@ -374,6 +380,7 @@
                 "Results": "Wyniki"
             },
             "SongCount": "<alpha=#60>Utworów: <alpha=#ff>{0:N0}",
+            "TourCount": "<alpha=#60>Tras: <alpha=#ff>{0:N0}",
             "ScanNeeded": "<alpha=#60>Potrzebny skan",
             "DMXInfo": "Wartości kanałów DMX do zmiany rodzaju oświetlenia i zmiany efektów postprocessingu:\n\n<b>Rodzaj oświetlenia:</b>\n\n0 - Brak rodzaju oświetlenia\n10 - Menu\n20 - Wyniki\n30 - Intro\n40 - Zwrotka\n50 - Refren\n60 - Chłodne (automatyczne)\n70 - Ciepłe (automatyczne\n80 - Chłodne (ręczne)\n90 - Ciepłe (ręczne)\n100 - Dysonans\n110 - Tupnięcie\n120 - Domyślne\n130 - Harmonia\n140 - Szaleństwo\n150 - Sylwetki\n160 - Sylwetki (reflektor)\n170 - Reflektory\n180 - Sweep\n190 - Zaciemnienie (szybkie)\n200 - Zaciemnienie (powolne)\n210 - Zaciemnienie (reflektor)\n220 - Błysk (szybki)\n230 - Błysk (powolny)\n240 - Wielkie Rockowe Zakończenie\n\nAby otrzymać status oświetlenia stroboskopowego oraz status mgły należy nasłuchiwać odpowiadające im kanały.\n\n<b>Postprocessing:</b>\n\n0 - Domyślne\n\nPodstawowe efekty\n4 - Bloom\n14 - Jasność\n24 - Kontrast\n34 - Lustro\n44 - Negatyw\n54 - Posterize\n\nFiltry i efekty kolorów\n64 - Czarno-biały\n74 - Sepia\n84 - Srebrne odcienie\n94 - Czarno-biały (poszarpany)\n104 - Negatyw (czerwony i czarny)\n114 - Polaryzacja (czarny i biały)\n124 - Polaryzacja (czerwony i niebieski)\n134 - Desaturowany czerwony\n144 - Desaturowany niebieski\n154 - Kontrast czerwony\n164 - Kontrast zielony\n174 - Kontrast niebieski\n\nZiarno\n184 - Ziarno\n194 - Ziarno i aberracja chromatyczna\n\nLinie skanowania\n204 - Linie skanowania\n214 - Linie skanowania (czarno-biały)\n224 - Linie skanowania (niebieski)\n234 - Linie skanowania (monitoring)\n\nSzlaki\n244 - Szlaki\n252 - Długie szlaki\n253 - Desaturowane szlaki\n254 - Migające szlaki\n255 - Kosmiczne szlaki\n\nWięcej informacji w dokumentacji YARG: https://wiki.yarg.in/wiki/DMX"
         }
@@ -740,6 +747,7 @@
             "ExportSongs": "Export Songs List",
             "PathsAndFolders": "Ścieżki i foldery",
             "MusicLibrary": "Biblioteka",
+            "Tours": "Trasy",
             "PlayAShow": "Zagraj występ",
             "ScanningOptions": "Ustawienia skanowania",
             "RB3E": "Ustawienia RB3E",
@@ -1085,6 +1093,14 @@
             "ShowFavoriteButton": {
                 "Name": "Pokaż przycisk \"Dodaj do ulubionych\"",
                 "Description": "Pokazuje przycisk \"Dodaj do ulubionych\" (w kształcie serca) w bibliotece. Nawet gdy przycisk jest ukryty, utwory mogą być dodane do ulubionych przy użyciu menu \"Więcej opcji\"."
+            },
+            "UseAllResultsInTour": {
+                "Name": "Używaj wszystkich wyników utworów w trasie",
+                "Description": "Gdy włączone, jeśli utwór został ukończony poza trasą (np. w Szybkiej grze lub innej trasie), nadal będzie liczony jako ukończony we wszystkich trasach. Gdy wyłączone, używane będą tylko utwory ukończone w wybranej trasie."
+            },
+            "HideLockedTourSongsInQuickplay": {
+                "Name": "Ukryj zablokowane utwory z tras w Szybkiej grze",
+                "Description": "Gdy włączone, utwory muszą zostać odblokowane w trasach, aby były dostępne w Szybkiej grze. Gdy wyłączone, wszystkie utwory będą widoczne w Szybkiej grze."
             },
             "ShowHitWindow": {
                 "Name": "Pokaż okno trafienia",

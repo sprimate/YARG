@@ -268,6 +268,7 @@
             "MessageOfTheDay": "<align=center><size=32><b>Welcome to v0.14!</b></size></align>\n\nv0.14 is a major update that adds 5 Lane Keys, a new MIDI Drums profile type, easier instrument setup, support for 3D venue events, performance improvements when using multiple highways, many visual improvements, and more.\n\n<b>If you have any feedback or find any bugs, please let us know on Discord or GitHub.</b>\n\nHappy YARGin'!",
             "Options": {
                 "Quickplay": "Jogo rápido",
+                "Tour": "Digressão",
                 "Practice": "Praticar",
                 "Profiles": "Perfis",
                 "History": "Histórico",
@@ -367,6 +368,11 @@
             "RestartSong": "Restart Song",
             "EndSetlistEarly": "End Setlist"
         },
+        "TourList": {
+            "CreateTour": "Criar Digressão",
+            "EditTour": "Editar Digressão",
+            "CloudTours": "Digressões na Nuvem"
+        },
         "Settings": {
             "NoFolder": "<i>Nenhuma Pasta</i>",
             "SearchHeader": {
@@ -374,6 +380,7 @@
                 "Results": "Results"
             },
             "SongCount": "{0:N0} <alpha=#60>Songs",
+            "TourCount": "{0:N0} <alpha=#60>Digressões",
             "ScanNeeded": "<alpha=#60>Scan Necessário",
             "DMXInfo": "DMX refere-se à mudança de cue e aos valores dos canais de pós-processamento:\n\n<b>Mudança de Cues:</b>\n\n0 - Sem cue\n10 - Menu\n20 - Pontuação\n30 - Introdução\n40 - Verso\n50 - Refrão\n60 - Legal (loop)\n70 - Quente (loop)\n80 - Legal (manual)\n90 - Quente (manual)\n100 - Dissonância\n110 - Pisada\n120 - Padrão\n130 - Harmonia\n140 - Frenesi\n150 - Silhuetas\n160 - Silhuetas Holofote\n170 - Holofotes\n180 - Varredura\n190 - Apagão (rápido)\n200 - Apagão (lento)\n210 - Apagão (holofote)\n220 - Flare (lento)\n230 - Flare (rápido)\n240 - Final Grande de Rock\n\nPara o status de Strobe e Fog, consulte seus respectivos canais.\n\n<b>Pós-processamento:</b>\n\n0 - Padrão\n\nEfeitos básicos\n4 - Bloom\n14 - Brilhante\n24 - Contraste\n34 - Espelho\n44 - Foto Negativo\n54 - Posterizar\n\nFiltros/efeitos de cor\n64 - Preto e Branco\n74 - Sépia\n84 - Prata\n94 - Preto e Branco Instável\n104 - Negativo Preto e Vermelho\n114 - Polarizado Preto e Branco\n124 - Polarizado Vermelho e Azul\n134 - Vermelho Dessaturado\n144 - Azul Dessaturado\n154 - Contraste Vermelho\n164 - Contraste Verde\n174 - Contraste Azul\n\nGranulado\n184 - Filme Granulado\n194 - Abordagem Cromática Granulada\n\nLinhas de Varredura\n204 - Linhas de Varredura\n214 - Linhas de Varredura Preto e Branco\n224 - Linhas de Varredura Azul\n234 - Linhas de Varredura Segurança\n\nTrails (Trilhas)\n244 - Trilhas\n252 - Trilhas Longas\n253 - Trilhas Dessaturadas\n254 - Trilhas Cintilantes\n255 - Rastros Espaciais\n\nVer documentos YARG para mais informações: https://docs.yarg.in/en/DMX"
         }
@@ -740,6 +747,7 @@
             "ExportSongs": "Export Songs List",
             "PathsAndFolders": "Caminhos e pastas",
             "MusicLibrary": "Biblioteca de música",
+            "Tours": "Digressões",
             "PlayAShow": "Play A Show",
             "ScanningOptions": "Opções de Scan",
             "RB3E": "Configurações de RB3E",
@@ -1085,6 +1093,14 @@
             "ShowFavoriteButton": {
                 "Name": "Show Favorite Button",
                 "Description": "Shows and hides the favorite button in the Music Library. Songs can still be favorited in the \"More Options\" menu when this button is hidden."
+            },
+            "UseAllResultsInTour": {
+                "Name": "Usar Todos os Resultados de Músicas na Digressão",
+                "Description": "Quando ativado, se uma música foi concluída fora de uma Digressão (como no Jogo rápido ou noutra Digressão), continuará a contar como concluída em todas as Digressões. Quando desativado, só serão usadas as músicas concluídas dentro da digressão selecionada."
+            },
+            "HideLockedTourSongsInQuickplay": {
+                "Name": "Ocultar Músicas de Digressão Bloqueadas no Jogo Rápido",
+                "Description": "Quando ativado, as músicas terão de ser desbloqueadas nas Digressões para estarem disponíveis no Jogo rápido. Quando desativado, todas as músicas serão mostradas no Jogo rápido."
             },
             "ShowHitWindow": {
                 "Name": "Show Hit Window",
