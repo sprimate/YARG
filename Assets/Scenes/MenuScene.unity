@@ -2321,6 +2321,18 @@ PrefabInstance:
       propertyPath: '_buttons.Array.data[6]'
       value: 
       objectReference: {fileID: 1038849045}
+    - target: {fileID: 4671384087136440526, guid: 486ef35aea309d444b9e532e40dad091, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1038849053}
+    - target: {fileID: 4671384087136440526, guid: 486ef35aea309d444b9e532e40dad091, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnScrollBarChange
+      objectReference: {fileID: 0}
+    - target: {fileID: 4671384087136440526, guid: 486ef35aea309d444b9e532e40dad091, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: YARG.TourMenu, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 4767512371878701923, guid: 486ef35aea309d444b9e532e40dad091, type: 3}
       propertyPath: m_text
       value: Tour
