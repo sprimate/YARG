@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using YARG.Menu.Navigation;
 using YARG.Core.Input;
@@ -59,6 +60,15 @@ namespace YARG
         private static ScrollView _myToursList;
         private static VisualElement _modalOverlay;
         private static Button _backBarButton;
+
+        // Invisible full-screen element that sits on top of everything and
+        // swallows all pointer events until the mouse button that opened the
+        // menu is released. The menu is opened from a uGUI button's
+        // pointer-DOWN handler, and UI Toolkit processes that same frame's
+        // input afterwards — without this, the still-held press registers as
+        // a PointerDown on whatever now sits under the cursor (e.g. the Back
+        // button), and releasing completes it as a click.
+        private static VisualElement _inputShield;
         private static readonly Dictionary<SortColumn, Button> _headerButtons = new();
 
         // ─── State ───────────────────────────────────────────────────────────
@@ -128,6 +138,11 @@ namespace YARG
             // would NRE on every open after the first.
             _host.SetActive(true);
             BuildUi();
+
+            // No pointer interaction with the new UI until the press that
+            // opened this menu has been released.
+            RaiseInputShield();
+            LowerInputShieldWhenPointerReleased().Forget();
 
             // Block all input to the canvases / UI underneath the menu,
             // exactly like TourEditorMenu does.
@@ -199,6 +214,7 @@ namespace YARG
             _browseList = null;
             _myToursList = null;
             _backBarButton = null;
+            _inputShield = null;
             _headerButtons.Clear();
         }
 
@@ -1005,6 +1021,64 @@ namespace YARG
             }
 
             return missing;
+        }
+
+        // ─── Input shield ────────────────────────────────────────────────────
+
+        private static void RaiseInputShield()
+        {
+            if (_inputShield != null || _root == null)
+            {
+                return;
+            }
+
+            _inputShield = new VisualElement
+            {
+                // Fully transparent, but picks (and therefore swallows) every
+                // pointer event before it can reach anything underneath.
+                pickingMode = PickingMode.Position,
+                style =
+                {
+                    position = Position.Absolute,
+                    left = 0, right = 0, top = 0, bottom = 0,
+                },
+            };
+            _root.Add(_inputShield);
+        }
+
+        private static async UniTaskVoid LowerInputShieldWhenPointerReleased()
+        {
+            int generation = _openGeneration;
+
+            // Always skip at least one frame so the frame that opened the menu
+            // can never interact with it, then wait for every pressed pointer
+            // button to be released.
+            do
+            {
+                await UniTask.Yield();
+
+                if (IsStale(generation))
+                {
+                    return;
+                }
+            } while (IsAnyPointerButtonPressed());
+
+            _inputShield?.RemoveFromHierarchy();
+            _inputShield = null;
+        }
+
+        private static bool IsAnyPointerButtonPressed()
+        {
+            var mouse = Mouse.current;
+            if (mouse != null && (mouse.leftButton.isPressed
+                || mouse.rightButton.isPressed
+                || mouse.middleButton.isPressed))
+            {
+                return true;
+            }
+
+            var touch = Touchscreen.current;
+            return touch != null && touch.primaryTouch.press.isPressed;
         }
 
         // ─── Modal confirm ───────────────────────────────────────────────────
