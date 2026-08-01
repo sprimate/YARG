@@ -345,6 +345,8 @@ namespace YARG.Menu.MusicLibrary
         protected override List<ViewType> CreateViewList()
         {
             // Shortcuts will be re-queried every time the list is refreshed
+            GlobalVariables.State.CurrentTour = null;
+
             _primaryHeaderIndex = 0;
 
             var viewList = MenuState switch
@@ -580,6 +582,33 @@ namespace YARG.Menu.MusicLibrary
                 };
 
                 _searchField.gameObject.SetActive(false);
+            }
+
+            if (SettingsManager.Settings.HideLockedTourSongsInQuickplay.Value)
+            {
+                List<SongCategory> categories = new List<SongCategory>();
+                foreach (var category in _sortedSongs)
+                {
+                    var songs = category.Songs.Where(song => !TourManager.IsSongLocked(song));
+                    if (songs.Any())
+                    {
+                        var newCategory = new SongCategory(category.Category, songs.ToArray(), category.CategoryGroup);
+                        categories.Add(newCategory);
+                    }
+                }
+
+                _sortedSongs = categories.ToArray();
+            }
+
+            foreach (var section in _sortedSongs)
+            {
+                foreach (var song in section.Songs)
+                {
+                    if (song.IsDuplicate)
+                    {
+                        Debug.LogWarning($"Song {song.Name} by {song.Artist} is a duplicate and will be hidden in the library.");
+                    }
+                }
             }
 
             RequestViewListUpdate();

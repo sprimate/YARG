@@ -15,6 +15,7 @@ using YARG.Localization;
 using YARG.Scores;
 using YARG.Core.Utility;
 using YARG.Core.Game;
+using UnityEngine;
 
 namespace YARG.Song
 {
@@ -62,9 +63,9 @@ namespace YARG.Song
 
     public readonly struct SongCategory
     {
-        public string      Category      { get; }
-        public string      CategoryGroup { get; }
-        public SongEntry[] Songs         { get; }
+        public string Category { get; }
+        public string CategoryGroup { get; }
+        public SongEntry[] Songs { get; }
 
         public SongCategory(string category, SongEntry[] songs, string categoryGroupName)
         {
@@ -156,6 +157,87 @@ namespace YARG.Song
             SongSources.LoadSprites(context);
         }
 
+        public static SongEntry GetSongEntry(string songArtist, string songName)
+        {
+            SongContainer.Artists.TryGetValue(new SortString(songArtist), out var artistContainer);
+            if (artistContainer != null)
+            {
+                var entry = artistContainer.FirstOrDefault(songEntry => songEntry?.Name == songName);
+                if (entry != null)
+                {
+                    return entry;
+                }
+            }
+
+            Debug.LogError("Could not find song " + songName + " by " + songArtist);
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the exact <see cref="GetSongEntry"/> match if one exists. Otherwise, falls
+        /// back to a similarity search across the whole library to recover from metadata
+        /// differences between song sources (extra suffixes on the artist name, minor
+        /// punctuation differences in the title, etc.) without requiring the caller's data to
+        /// be updated every time metadata changes.
+        /// </summary>
+        public static SongEntry GetFuzzySongEntry(string songArtist, string songName, double fuzzyArtistThreshold = 70, double fuzzySongNameThreshold = 85)
+        {
+            var entry = GetSongEntry(songArtist, songName);
+            if (entry != null)
+            {
+                return entry;
+            }
+
+            string artistSearch = new SortString(songArtist ?? "").SearchStr;
+            string nameSearch = new SortString(songName ?? "").SearchStr;
+            if (artistSearch.Length == 0 || nameSearch.Length == 0)
+            {
+                return null;
+            }
+
+            SongEntry bestMatch = null;
+            double bestScore = -1;
+
+            foreach (var (artistKey, songs) in SongContainer.Artists)
+            {
+                double artistScore = OptimizedFuzzySharp.PartialRatio(artistSearch.AsSpan(), artistKey.SearchStr.AsSpan());
+                if (artistScore < fuzzyArtistThreshold)
+                {
+                    continue;
+                }
+
+                foreach (var songEntry in songs)
+                {
+                    if (songEntry == null)
+                    {
+                        continue;
+                    }
+
+                    double nameScore = OptimizedFuzzySharp.PartialRatio(nameSearch.AsSpan(), songEntry.Name.SearchStr.AsSpan());
+                    if (nameScore < fuzzySongNameThreshold)
+                    {
+                        continue;
+                    }
+
+                    double combinedScore = nameScore * 0.7 + artistScore * 0.3;
+                    if (combinedScore > bestScore)
+                    {
+                        bestScore = combinedScore;
+                        bestMatch = songEntry;
+                    }
+                }
+            }
+
+            if (bestMatch != null)
+            {
+                YargLogger.LogFormatWarning(
+                    "Fuzzy-matched song '{0}' by '{1}' to library entry '{2}' by '{3}'",
+                    songName, songArtist, bestMatch.Name, bestMatch.Artist);
+            }
+
+            return bestMatch;
+        }
+
         public static SongCategory[] GetSortedCategory(SortAttribute sort)
         {
             var proposedSort = sort switch
@@ -176,26 +258,26 @@ namespace YARG.Song
                 SortAttribute.Stars => GetStars(),
 
                 SortAttribute.FiveFretGuitar => _sortInstruments[Instrument.FiveFretGuitar],
-                SortAttribute.FiveFretBass   => _sortInstruments[Instrument.FiveFretBass],
+                SortAttribute.FiveFretBass => _sortInstruments[Instrument.FiveFretBass],
                 SortAttribute.FiveFretRhythm => _sortInstruments[Instrument.FiveFretRhythm],
-                SortAttribute.FiveFretCoop   => _sortInstruments[Instrument.FiveFretCoopGuitar],
-                SortAttribute.Keys           => _sortInstruments[Instrument.Keys],
-                SortAttribute.SixFretGuitar  => _sortInstruments[Instrument.SixFretGuitar],
-                SortAttribute.SixFretBass    => _sortInstruments[Instrument.SixFretBass],
-                SortAttribute.SixFretRhythm  => _sortInstruments[Instrument.SixFretRhythm],
-                SortAttribute.SixFretCoop    => _sortInstruments[Instrument.SixFretCoopGuitar],
-                SortAttribute.FourLaneDrums  => _sortInstruments[Instrument.FourLaneDrums],
-                SortAttribute.ProDrums       => _sortInstruments[Instrument.ProDrums],
-                SortAttribute.FiveLaneDrums  => _sortInstruments[Instrument.FiveLaneDrums],
-                SortAttribute.EliteDrums     => _sortInstruments[Instrument.EliteDrums],
-                SortAttribute.ProGuitar_17   => _sortInstruments[Instrument.ProGuitar_17Fret],
-                SortAttribute.ProGuitar_22   => _sortInstruments[Instrument.ProGuitar_22Fret],
-                SortAttribute.ProBass_17     => _sortInstruments[Instrument.ProBass_17Fret],
-                SortAttribute.ProBass_22     => _sortInstruments[Instrument.ProBass_22Fret],
-                SortAttribute.ProKeys        => _sortInstruments[Instrument.ProKeys],
-                SortAttribute.Vocals         => _sortInstruments[Instrument.Vocals],
-                SortAttribute.Harmony        => _sortInstruments[Instrument.Harmony],
-                SortAttribute.Band           => _sortInstruments[Instrument.Band],
+                SortAttribute.FiveFretCoop => _sortInstruments[Instrument.FiveFretCoopGuitar],
+                SortAttribute.Keys => _sortInstruments[Instrument.Keys],
+                SortAttribute.SixFretGuitar => _sortInstruments[Instrument.SixFretGuitar],
+                SortAttribute.SixFretBass => _sortInstruments[Instrument.SixFretBass],
+                SortAttribute.SixFretRhythm => _sortInstruments[Instrument.SixFretRhythm],
+                SortAttribute.SixFretCoop => _sortInstruments[Instrument.SixFretCoopGuitar],
+                SortAttribute.FourLaneDrums => _sortInstruments[Instrument.FourLaneDrums],
+                SortAttribute.ProDrums => _sortInstruments[Instrument.ProDrums],
+                SortAttribute.FiveLaneDrums => _sortInstruments[Instrument.FiveLaneDrums],
+                SortAttribute.EliteDrums => _sortInstruments[Instrument.EliteDrums],
+                SortAttribute.ProGuitar_17 => _sortInstruments[Instrument.ProGuitar_17Fret],
+                SortAttribute.ProGuitar_22 => _sortInstruments[Instrument.ProGuitar_22Fret],
+                SortAttribute.ProBass_17 => _sortInstruments[Instrument.ProBass_17Fret],
+                SortAttribute.ProBass_22 => _sortInstruments[Instrument.ProBass_22Fret],
+                SortAttribute.ProKeys => _sortInstruments[Instrument.ProKeys],
+                SortAttribute.Vocals => _sortInstruments[Instrument.Vocals],
+                SortAttribute.Harmony => _sortInstruments[Instrument.Harmony],
+                SortAttribute.Band => _sortInstruments[Instrument.Band],
                 _ => null
             };
 
@@ -520,17 +602,17 @@ namespace YARG.Song
         {
             _songs = SetAllSongs(_songCache.Entries);
 
-            _sortArtists      = Convert(_songCache.Artists, SongAttribute.Artist);
-            _sortAlbums       = Convert(_songCache.Albums, SongAttribute.Album);
-            _sortGenres       = Convert(_songCache.Genres, SongAttribute.Genre);
-            _sortCharters     = Convert(_songCache.Charters, SongAttribute.Charter);
-            _sortPlaylists    = Convert(_songCache.Playlists, SongAttribute.Playlist);
-            _sortSources      = Convert(_songCache.Sources, SongAttribute.Source);
+            _sortArtists = Convert(_songCache.Artists, SongAttribute.Artist);
+            _sortAlbums = Convert(_songCache.Albums, SongAttribute.Album);
+            _sortGenres = Convert(_songCache.Genres, SongAttribute.Genre);
+            _sortCharters = Convert(_songCache.Charters, SongAttribute.Charter);
+            _sortPlaylists = Convert(_songCache.Playlists, SongAttribute.Playlist);
+            _sortSources = Convert(_songCache.Sources, SongAttribute.Source);
             _sortArtistAlbums = Combine(_songCache.ArtistAlbums);
 
-            _sortTitles       = Cast(_songCache.Titles);
-            _sortYears        = Cast(_songCache.Years);
-            _sortSongLengths  = Cast(_songCache.SongLengths);
+            _sortTitles = Cast(_songCache.Titles);
+            _sortYears = Cast(_songCache.Years);
+            _sortSongLengths = Cast(_songCache.SongLengths);
             _playables = null;
 
             _sortDatesAdded = new SongCategory[_songCache.DatesAdded.Count];

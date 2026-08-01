@@ -1457,7 +1457,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6366958812866603597, guid: cccf866ef69cf784b989cd792919610b, type: 3}
       propertyPath: _localizationKey
-      value: Tour
+      value: Menu.Main.Options.Tour
       objectReference: {fileID: 0}
     - target: {fileID: 7290593809168235268, guid: cccf866ef69cf784b989cd792919610b, type: 3}
       propertyPath: m_Color.b

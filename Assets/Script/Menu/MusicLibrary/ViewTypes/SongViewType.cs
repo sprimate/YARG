@@ -165,6 +165,11 @@ namespace YARG.Menu.MusicLibrary
             GlobalVariables.State.ShowSongs.Clear();
             GlobalVariables.State.ShowSongs.Add(SongEntry);
             GlobalVariables.State.PlayingAShow = false;
+            if (this is not TourSongViewType)
+            {
+                Debug.LogWarning("Setting current tour to null because we are not coming from a tour song view type");
+                GlobalVariables.State.CurrentTour = null;
+            }
 
             MenuManager.Instance.PushMenu(MenuManager.Menu.DifficultySelect);
         }

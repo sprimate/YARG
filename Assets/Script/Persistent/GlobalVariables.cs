@@ -34,7 +34,7 @@ namespace YARG
     {
         public List<YargPlayer> Players { get; private set; }
 
-        public static bool OfflineMode    { get; private set; }
+        public static bool OfflineMode { get; private set; }
         public static bool VerboseReplays { get; private set; }
 
         public static string PersistentDataPathOverride { get; private set; }
@@ -98,7 +98,6 @@ namespace YARG
         {
             SettingsManager.LoadSettings();
             InputManager.Initialize();
-
             LoadScene(SceneIndex.Menu);
         }
 

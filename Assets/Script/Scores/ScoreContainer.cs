@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 using YARG.Core;
 using YARG.Core.Game;
 using YARG.Core.Logging;
@@ -47,7 +48,7 @@ namespace YARG.Scores
             ScoreReplayDirectory = Path.Combine(ScoreDirectory, "replays");
 
             _scoreDatabaseFile = Path.Combine(ScoreDirectory, "scores.db");
-
+            Debug.Log($"Score database file path: {_scoreDatabaseFile}");
             try
             {
                 // Ensure the directories exist
@@ -139,6 +140,7 @@ namespace YARG.Scores
                 if (GlobalVariables.State.CurrentTour != null)
                 {
                     _db.InsertTourGameRecord(GlobalVariables.State.CurrentTour.TourId, gameRecord.Id);
+                    TourManager.UpdateTourProgressCache(GlobalVariables.State.CurrentTour, SongContainer.GetSongEntry(gameRecord.SongArtist, gameRecord.SongName));
                 }
 
                 // Update cached high scores

@@ -77,6 +77,7 @@ namespace YARG.Settings
                 nameof(Settings.UseFullDirectoryForPlaylists),
                 new HeaderMetadata("Tours"),
                 nameof(Settings.UseAllResultsInTour),
+                nameof(Settings.HideLockedTourSongsInQuickplay),
                 new HeaderMetadata("MusicLibrary"),
                 nameof(Settings.ShowFavoriteButton),
                 nameof(Settings.DifficultyRings),

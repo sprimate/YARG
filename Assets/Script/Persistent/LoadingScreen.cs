@@ -77,6 +77,7 @@ namespace YARG
 
             // Fast scan (cache read) on startup
             await SongContainer.RunRefresh(true, context);
+            await TourManager.UpdateTourProgressCache();
         }
 
         private void Quit()

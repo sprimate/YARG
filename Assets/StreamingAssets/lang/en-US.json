@@ -268,6 +268,7 @@
             "MessageOfTheDay": "<align=center><size=32><b>Welcome to v0.14!</b></size></align>\n\nv0.14 is a major update that adds 5 Lane Keys, a new MIDI Drums profile type, easier instrument setup, support for 3D venue events, performance improvements when using multiple highways, many visual improvements, and more.\n\n<b>If you have any feedback or find any bugs, please let us know on Discord or GitHub.</b>\n\nHappy YARGin'!",
             "Options": {
                 "Quickplay": "Quickplay",
+                "Tour": "Tour",
                 "Practice": "Practice",
                 "Profiles": "Profiles",
                 "History": "History",
@@ -1091,6 +1092,10 @@
             "UseAllResultsInTour": {
                 "Name": "Use All Song Results In Tour",
                 "Description": "When enabled, if a song was completed outside a Tour (like in Quickplay or another Tour), it'll still count as completed within all Tours. If disabled, only songs completed within the selected tour will be used."
+            },
+            "HideLockedTourSongsInQuickplay": {
+                "Name": "Hide Locked Tour Songs In Quickplay",
+                "Description": "When enabled, Quickplay songs will need to be unlocked in Tours to be available in Quickplay. If disabled, all songs will be shown in Quickplay."
             },
             "ShowHitWindow": {
                 "Name": "Show Hit Window",

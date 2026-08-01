@@ -27,8 +27,6 @@ namespace YARG
                 songOrCategoryName.overflowMode = TextOverflowModes.Ellipsis;
             }
 
-            Debug.Log("View Type for {vieweType.Name}: " + viewType.GetType().Name + " setting " + songOrCategoryName + " to " + songOrCategoryName.overflowMode, songOrCategoryName);
-
             if (viewType is TourSongViewType tourSongViewType)
             {
                 var instrument = tourSongViewType._PlayerPercentRecord?.Instrument;

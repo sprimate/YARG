@@ -21,10 +21,7 @@ namespace YARG
         public TextMeshProUGUI totalScoreText;
         public TextMeshProUGUI totalSongsText;
         private TourData CurrentTourData { get => GlobalVariables.State.CurrentTour; set => GlobalVariables.State.CurrentTour = value; }
-        private TourData setupTourData;
-        int totalStars;
-        int totalScore;
-        int totalSongs;
+        private static TourData lastTourData;
         public static bool IsLocked(ViewType viewType)
         {
             return viewType is TourSongViewType songViewType && songViewType.isLocked;
@@ -32,7 +29,7 @@ namespace YARG
 
         protected override void OnEnable()
         {
-            if (setupTourData == CurrentTourData)
+            if (lastTourData == CurrentTourData)
             {
                 SetReload(MusicLibraryReloadState.None);
             }
@@ -40,29 +37,30 @@ namespace YARG
             {
                 SetReload(MusicLibraryReloadState.Full);
             }
+
             base.OnEnable();
-            UpdateScores();
+            UpdateScoresTexts();
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
-            CurrentTourData = null;
             SetReload(MusicLibraryReloadState.Full);
         }
 
         protected override void Refresh()
         {
             base.Refresh();
-            UpdateScores();
+            UpdateScoresTexts();
         }
 
-        void UpdateScores()
+        void UpdateScoresTexts()
         {
+            var tourProgress = TourManager.GetTourProgress(CurrentTourData);
             Debug.Log("Updating Scores!");
-            totalSongsText.text = $"Songs: {totalSongs}";
-            totalStarsText.text = $"Stars: {totalStars}";
-            totalScoreText.text = $"Score: {totalScore}";
+            totalSongsText.text = $"Songs: {tourProgress.TotalSongs}";
+            totalStarsText.text = $"Stars: {tourProgress.TotalStars}";
+            totalScoreText.text = $"Score: {tourProgress.TotalScore}";
         }
 
         private static string BuildUnlockText(TourShowData show)
@@ -104,37 +102,18 @@ namespace YARG
         protected override List<ViewType> CreateViewList()
         {
             List<ViewType> list = new List<ViewType>();
-            if (CurrentTourData == null && setupTourData != null)
+            if (CurrentTourData == null)
             {
-                CurrentTourData = setupTourData;
-                setupTourData = null;
+                CurrentTourData = lastTourData;
             }
-
             bool showedFirstLocked = false;
-            totalStars = totalScore = totalSongs = 0;
-
+            Debug.LogWarning("Current Tour Data: " + CurrentTourData?.TourName);
+            var tourProgress = TourManager.GetTourProgress(CurrentTourData);//UpdateTourProgressCache(CurrentTourData);
             foreach (var show in CurrentTourData.Shows)
             {
-                List<SongEntry> showSongs = new();
-                foreach (var incomingEntry in show.Songs)
-                {
-                    if (SongContainer.Artists.TryGetValue(new SortString(incomingEntry.Artist), out var artistContainer))
-                    {
-                        var entry = artistContainer.FirstOrDefault(songEntry => songEntry?.Name == incomingEntry?.SongName);
-                        if (entry != null)
-                        {
-                            showSongs.Add(entry);
-                            continue;
-                        }
-                        else
-                        {
-                            Debug.LogError("Could not find song " + incomingEntry.SongName + " by " + incomingEntry.Artist);
-                            //Probably put up a special ViewType for songs that we couldn't find, telling the user they need to add/download it
-                        }
-                    }
-                }
+                var showSongs = show.GetSongEntries();
 
-                bool isLocked = show.UnlockConditions != null && show.UnlockConditions.Length > 0 && show.UnlockConditions.Any(condition => !IsConditionMet(condition));
+                bool isLocked = tourProgress.LockedShows.Contains(show.ShowName);
 
                 var showName = show.ShowName;
                 if (isLocked)
@@ -146,7 +125,7 @@ namespace YARG
 
                     if (!show.ShowLockedSongs)
                     {
-                        showSongs.Clear();
+                        showSongs = Enumerable.Empty<SongEntry>();
                     }
 
                     var unlockText = BuildUnlockText(show);
@@ -158,71 +137,19 @@ namespace YARG
                     showedFirstLocked = true;
                 }
 
-                list.Add(new CategoryViewType(showName, showSongs.Count, showSongs.ToArray()));
+                list.Add(new CategoryViewType(showName, showSongs.Count(), showSongs.ToArray()));
 
                 foreach (var song in showSongs)
                 {
                     var songType = new TourSongViewType(this, song, isLocked);
-                    var record = GetPlayerScoreRecord(song);
-                    if (record != null && !isLocked)
-                    {
-                        totalStars += record.Stars.GetStarCount();
-                        totalScore += record.Score;
-                        totalSongs++;
-                    }
-
                     list.Add(songType);
                 }
             }
 
-            UpdateScores();
-            setupTourData = CurrentTourData;
+            UpdateScoresTexts();
+            lastTourData = CurrentTourData;
+            Debug.LogWarning("SET LAST TOUR DATA TO " + lastTourData?.TourName);
             return list;
-        }
-
-        PlayerScoreRecord GetPlayerScoreRecord(SongEntry song)
-        {
-            var db = ScoreContainer.Database;
-            var player = PlayerContainer.Players.First(e => !e.Profile.IsBot);
-            bool useAllResults = SettingsManager.Settings.UseAllResultsInTour.Value;
-            PlayerScoreRecord bestRecord = null;
-            foreach (var instrument in Enum.GetValues(typeof(Core.Instrument)).Cast<Core.Instrument>())
-            {
-                PlayerScoreRecord potentialRecord;
-                if (useAllResults)
-                {
-                    potentialRecord = db.QueryPlayerSongHighScore(song.Hash, player.Profile.Id, instrument, false);
-                }
-                else
-                {
-                    potentialRecord = db.QueryTourSongHighScore(CurrentTourData.TourId, song.Hash, player.Profile.Id, instrument, false);
-                }
-
-                if (potentialRecord != null && (bestRecord == null || potentialRecord.Score > bestRecord.Score))
-                {
-                    bestRecord = potentialRecord;
-                }
-            }
-
-            Debug.Log("Use ALl Results!!! " + useAllResults + " -> " + bestRecord);
-            return bestRecord;
-        }
-
-        bool IsConditionMet(TourUnlockCondition condition)
-        {
-            // var db = ScoreContainer.Database;
-            // var tourId = SelectedTourData.TourId;
-
-            int actual = condition.TypeOfCondition switch
-            {
-                TourUnlockCondition.ConditionType.SongsCompleted => totalSongs,
-                TourUnlockCondition.ConditionType.StarsEarned => totalStars,
-                TourUnlockCondition.ConditionType.Score => totalScore,
-                _ => throw new InvalidOperationException(
-                    $"Unknown TourUnlockCondition type: {condition.TypeOfCondition}"),
-            };
-
-            return actual >= condition.RequiredAmount;
         }
     }
 }

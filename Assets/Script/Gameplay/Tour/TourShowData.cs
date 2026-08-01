@@ -1,4 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using YARG.Core.Song;
+using YARG.Song;
 
 namespace YARG
 {
@@ -33,5 +38,17 @@ namespace YARG
         /// An empty array means the show is always unlocked.
         /// </summary>
         public TourUnlockCondition[] UnlockConditions;
+
+        public IEnumerable<SongEntry> GetSongEntries()
+        {
+            foreach (var incomingEntry in Songs)
+            {
+                var entry = SongContainer.GetFuzzySongEntry(incomingEntry.Artist, incomingEntry.SongName);
+                if (entry != null)
+                {
+                    yield return entry;
+                }
+            }
+        }
     }
 }

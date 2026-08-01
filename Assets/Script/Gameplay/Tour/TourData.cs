@@ -27,5 +27,10 @@ namespace YARG
         /// Shows are referenced by their 0-based index within this array.
         /// </summary>
         public TourShowData[] Shows;
+
+        public TourProgress GetTourProgress()
+        {
+            return TourManager.GetTourProgress(TourId);
+        }
     }
 }
